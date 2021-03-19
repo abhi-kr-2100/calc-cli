@@ -1,20 +1,50 @@
-// calc-cli.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+/**
+ * calc-cli is a command-line calculator.
+ * 
+ * It supports addition, subtraction, multiplication, and division
+ * along with parentheses to change the order of evaluation.
+ */
+
 
 #include <iostream>
+#include <string>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+#include "token.hpp"
+#include "grammar.hpp"
+
+
+using std::cout;
+using std::cin;
+using std::getline;
+using std::string;
+
+
+double evaluate(const string& expression);
+
+
+int main() {
+	constexpr auto prompt = "> ";
+	constexpr auto answer = "= ";
+	constexpr auto quit = "quit";
+
+	while (true) {
+		cout << prompt;
+		string input;
+		getline(cin, input);
+
+		if (input == quit) {
+			return 0;
+		}
+
+		cout << answer << evaluate(input) << "\n";
+	}
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+/**
+ * Return the value of a math expression.
+ */
+double evaluate(const string& s) {
+	auto tokens = tokenize(s);
+	return expression(tokens.begin(), tokens.end());
+}
