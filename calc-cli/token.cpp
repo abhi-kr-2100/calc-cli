@@ -38,6 +38,10 @@ vector<Token> tokenize(const string& s) {
 		char token;
 		sin >> token;
 
+		if (!sin) {
+			break;
+		}
+
 		switch (token) {
 		case '+':
 			toks.push_back(Token{ Token_type::plus });
