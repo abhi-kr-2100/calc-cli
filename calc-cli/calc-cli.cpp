@@ -11,10 +11,12 @@
 
 #include "token.hpp"
 #include "grammar.hpp"
+#include "exceptions.hpp"
 
 
 using std::cout;
 using std::cin;
+using std::cerr;
 using std::getline;
 using std::string;
 
@@ -25,6 +27,7 @@ double evaluate(const string& expression);
 int main() {
 	constexpr auto prompt = "> ";
 	constexpr auto answer = "= ";
+	constexpr auto error = "Error: ";
 	constexpr auto quit = "quit";
 
 	while (true) {
@@ -36,7 +39,19 @@ int main() {
 			return 0;
 		}
 
-		cout << answer << evaluate(input) << "\n";
+		try {
+			cout << answer << evaluate(input);
+		} catch (Unbalanced_parentheses&) {
+			cerr << error << "unbalanced parentheses.";
+		} catch (Unknown_token&) {
+			cerr << error << "unknown token.";
+		} catch (Bad_literal&) {
+			cerr << error << "not a valid number.";
+		} catch (Divide_by_zero&) {
+			cerr << error << "can't divide by zero.";
+		}
+
+		cout << "\n";
 	}
 }
 
