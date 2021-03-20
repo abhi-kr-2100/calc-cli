@@ -15,7 +15,11 @@
 #include <string>
 
 
-enum class Token_type { plus, minus, multiply, divide, number };
+enum class Token_type {
+	plus, minus, multiply, divide,
+	number,
+	p_open, p_close	// parentheses
+};
 
 
 struct Token {

@@ -19,6 +19,8 @@ using std::vector;
 using std::string;
 using std::istringstream;
 
+using ull = unsigned unsigned long;
+
 
 double read_number(const istringstream& source, char start);
 
@@ -29,6 +31,7 @@ double read_number(const istringstream& source, char start);
  */
 vector<Token> tokenize(const string& s) {
 	vector<Token> toks;
+	ull nesting = 0;	// are we inside a "(" .. ")", how deep?
 
 	istringstream sin{ s };
 	while (true) {
@@ -48,6 +51,14 @@ vector<Token> tokenize(const string& s) {
 		case '/':
 			toks.push_back(Token{ Token_type::divide });
 			break;
+		case '(':
+			toks.push_back(Token{ Token_type::p_open });
+			++nesting;
+			break;
+		case ')':
+			toks.push_back(Token{ Token_type::p_close });
+			--nesting;
+			break;
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
 		case '.': {	// floating-point literal may start with a "."
@@ -58,9 +69,15 @@ vector<Token> tokenize(const string& s) {
 			break;
 		}
 		default:
-			throw Invalid_token{
+			throw Unknown_token{
 				"A valid token doesn't start with "s + tok
 			};
+		}
+	}
+
+	if (nesting) {
+		throw Unbalanced_parentheses{
+			"Extra "s + ((nesting > 0) ? '(' : ')') + "s in input."
 		}
 	}
 
