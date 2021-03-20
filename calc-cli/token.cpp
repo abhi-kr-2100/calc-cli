@@ -22,7 +22,7 @@ using std::istringstream;
 using ull = unsigned long long;
 
 
-double read_number(const istringstream& source, char start);
+double read_number(istringstream& source, char start);
 
 
 /**
@@ -81,7 +81,7 @@ vector<Token> tokenize(const string& s) {
 }
 
 
-double read_number(const istringstream& in, char c) {
+double read_number(istringstream& in, char c) {
 	double n;
 	in >> n;
 
