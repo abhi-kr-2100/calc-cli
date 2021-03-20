@@ -22,6 +22,7 @@ using std::string;
 
 
 double evaluate(const string& expression);
+void clrscr();
 
 
 int main() {
@@ -29,6 +30,7 @@ int main() {
 	constexpr auto answer = "= ";
 	constexpr auto error = "Error: ";
 	constexpr auto quit = "quit";
+	constexpr auto clear = "clear";
 
 	while (true) {
 		cout << prompt;
@@ -39,6 +41,9 @@ int main() {
 			continue;
 		} else if (input == quit) {
 			return 0;
+		} else if (input == clear) {
+			clrscr();
+			continue;
 		}
 
 		try {
@@ -66,4 +71,12 @@ int main() {
 double evaluate(const string& s) {
 	auto tokens = tokenize(s);
 	return expression(tokens.begin(), tokens.end());
+}
+
+
+/**
+ * Clear the screen by outputing a special terminal sequence.
+ */
+void clrscr() {
+	cout << "\033[2J\033[1;1H";
 }
