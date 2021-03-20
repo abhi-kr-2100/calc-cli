@@ -6,8 +6,8 @@
  * 
  * <expression> := <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>		:= <term> "*" <primary> | <term> "/" <primary> | <primary>
- * <primary>	:= <number> | "(" <expression> ")"
- * <number>		:= a floating-point literal as used in C++
+ * <primary>	:= <number> | "(" <expression> ")" | "-" <primary> | "+" <primary>
+ * <number>		:= a floating-point literal as used in C++ without unary + or -
  */
 
 
@@ -17,6 +17,9 @@
 
 
 using ull = unsigned long long;
+
+
+bool is_operator(Token_type t);
 
 
 double expression(const Token_iter& s, const Token_iter& e) {
@@ -35,12 +38,18 @@ double expression(const Token_iter& s, const Token_iter& e) {
 			break;
 		case Token_type::plus:
 			if (!nesting) {
-				return expression(s, i) + term(i + 1, e);
+				// check that this plus is not a unary plus
+				if (!(i == s || is_operator((i - 1)->type))) {
+					return expression(s, i) + term(i + 1, e);
+				}
 			}
 			break;
 		case Token_type::minus:
 			if (!nesting) {
-				return expression(s, i) - term(i + 1, e);
+				// check that this minus is not a unary minus
+				if (!(i == s || is_operator((i - 1)->type))) {
+					return expression(s, i) - term(i + 1, e);
+				}
 			}
 			break;
 		}
@@ -104,7 +113,20 @@ double primary(const Token_iter& s, const Token_iter& e) {
 			throw Unbalanced_parentheses{};
 		}
 		return expression(s + 1, e - 1);
+	case Token_type::plus:
+		return +primary(s + 1, e);
+	case Token_type::minus:
+		return -primary(s + 1, e);
 	default:
 		throw Unknown_token{};
 	}
+}
+
+
+/**
+ * Is the Token referred to by i an operator?
+ */
+bool is_operator(Token_type t) {
+	return t == Token_type::plus || t == Token_type::minus ||
+		t == Token_type::multiply || t == Token_type::divide;
 }
