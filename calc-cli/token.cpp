@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <string>
-#include <strstream>
+#include <sstream>
 
 #include "token.hpp"
 #include "exceptions.hpp"
@@ -19,7 +19,7 @@ using std::vector;
 using std::string;
 using std::istringstream;
 
-using ull = unsigned unsigned long;
+using ull = unsigned long long;
 
 
 double read_number(const istringstream& source, char start);
@@ -69,16 +69,12 @@ vector<Token> tokenize(const string& s) {
 			break;
 		}
 		default:
-			throw Unknown_token{
-				"A valid token doesn't start with "s + tok
-			};
+			throw Unknown_token{};
 		}
 	}
 
 	if (nesting) {
-		throw Unbalanced_parentheses{
-			"Extra "s + ((nesting > 0) ? '(' : ')') + "s in input."
-		}
+		throw Unbalanced_parentheses{};
 	}
 
 	return toks;
@@ -90,7 +86,7 @@ double read_number(const istringstream& in, char c) {
 	in >> n;
 
 	if (in.bad()) {
-		throw Bad_literal{ "Not a valid number: "s + c };
+		throw Bad_literal{};
 	}
 
 	return n;

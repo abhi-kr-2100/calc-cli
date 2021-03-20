@@ -48,7 +48,7 @@ double expression(const Token_iter& s, const Token_iter& e) {
 		// <expression> "-" <term> fails
 
 	if (nesting) {
-		throw Unbalanced_parentheses{ "Unbalanced parentheses." };
+		throw Unbalanced_parentheses{};
 	}
 
 	return term(s, e);
@@ -78,7 +78,7 @@ double term(const Token_iter& s, const Token_iter& e) {
 			if (!nesting) {
 				double p = primary(i + 1, e);
 				if (p == 0) {
-					throw Divide_by_zero("Can't divide by 0.");
+					throw Divide_by_zero{};
 				}
 				return term(s, i) / p;
 			}
@@ -88,7 +88,7 @@ double term(const Token_iter& s, const Token_iter& e) {
 		// <term> "/" <primary> fails
 
 	if (nesting) {
-		throw Unbalanced_parentheses{ "Unbalanced parentheses." };
+		throw Unbalanced_parentheses{};
 	}
 
 	return primary(s, e);
@@ -101,10 +101,10 @@ double primary(const Token_iter& s, const Token_iter& e) {
 		return s->value;
 	case Token_type::p_open:
 		if ((e - 1)->type != Token_type::p_close) {
-			throw Unbalanced_parentheses{ "Unbalanced parentheses." };
+			throw Unbalanced_parentheses{};
 		}
 		return expression(s + 1, e - 1);
 	default:
-		throw Unknown_token{ "Unknown start of primary." };
+		throw Unknown_token{};
 	}
 }
