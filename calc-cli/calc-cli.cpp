@@ -35,7 +35,9 @@ int main() {
 		string input;
 		getline(cin, input);
 
-		if (input == quit) {
+		if (input.size() == 0) {
+			continue;
+		} else if (input == quit) {
 			return 0;
 		}
 
