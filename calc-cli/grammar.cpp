@@ -5,8 +5,9 @@
  * according to the following grammar:
  * 
  * <expression> := <expression> "+" <term> | <expression> "-" <term> | <term>
- * <term>		:= <term> "*" <primary> | <term> "/" <primary> | <primary>
- * <primary>	:= <number> | "(" <expression> ")" | "-" <primary> | "+" <primary>
+ * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <unary>
+ * <unary>		:= "+" <primary> | "-" <primary> | <primary>
+ * <primary>	:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>		:= a floating-point literal as used in C++ without unary + or -
  */
 
@@ -20,6 +21,7 @@ using ull = unsigned long long;
 
 
 bool is_operator(Token_type t);
+double factorial(ull n);
 
 
 double expression(const Token_iter& s, const Token_iter& e) {
@@ -80,12 +82,12 @@ double term(const Token_iter& s, const Token_iter& e) {
 			break;
 		case Token_type::multiply:
 			if (!nesting) {
-				return term(s, i) * primary(i + 1, e);
+				return term(s, i) * unary(i + 1, e);
 			}
 			break;
 		case Token_type::divide:
 			if (!nesting) {
-				double p = primary(i + 1, e);
+				double p = unary(i + 1, e);
 				if (p == 0) {
 					throw Divide_by_zero{};
 				}
@@ -93,18 +95,38 @@ double term(const Token_iter& s, const Token_iter& e) {
 			}
 			break;
 		}
-	}	// search for <term> "*" <primary> or
-		// <term> "/" <primary> fails
+	}	// search for <term> "*" <unary> or
+		// <term> "/" <unary> fails
 
 	if (nesting) {
 		throw Unbalanced_parentheses{};
 	}
 
-	return primary(s, e);
+	return unary(s, e);
+}
+
+
+double unary(const Token_iter& s, const Token_iter& e) {
+	switch (s->type) {
+	case Token_type::plus:
+		return +primary(s + 1, e);
+	case Token_type::minus:
+		return -primary(s + 1, e);
+	default:
+		return primary(s, e);
+	}
 }
 
 
 double primary(const Token_iter& s, const Token_iter& e) {
+	if ((e - 1)->type == Token_type::factorial) {
+		double n = primary(s, e - 1);
+		if (ull(n) != n) {
+			throw Unsupported_operand{};
+		}
+		return factorial(ull(n));
+	}
+
 	switch (s->type) {
 	case Token_type::number:
 		return s->value;
@@ -113,10 +135,11 @@ double primary(const Token_iter& s, const Token_iter& e) {
 			throw Unbalanced_parentheses{};
 		}
 		return expression(s + 1, e - 1);
-	case Token_type::plus:
-		return +primary(s + 1, e);
-	case Token_type::minus:
-		return -primary(s + 1, e);
+	// handled by unary now
+	//case Token_type::plus:
+	//	return +primary(s + 1, e);
+	//case Token_type::minus:
+	//	return -primary(s + 1, e);
 	default:
 		throw Unknown_token{};
 	}
@@ -129,4 +152,14 @@ double primary(const Token_iter& s, const Token_iter& e) {
 bool is_operator(Token_type t) {
 	return t == Token_type::plus || t == Token_type::minus ||
 		t == Token_type::multiply || t == Token_type::divide;
+}
+
+
+double factorial(ull n) {
+	double r = 1;
+	for (ull i = 1; i <= n; ++i) {
+		r *= i;
+	}
+
+	return r;
 }

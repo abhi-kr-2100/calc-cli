@@ -65,6 +65,9 @@ vector<Token> tokenize(const string& s) {
 			toks.push_back(Token{ Token_type::number, n });
 			break;
 		}
+		case '!':
+			toks.push_back(Token{ Token_type::factorial });
+			break;
 		default:
 			throw Unknown_token{};
 		}
