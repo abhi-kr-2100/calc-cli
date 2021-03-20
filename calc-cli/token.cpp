@@ -34,14 +34,7 @@ vector<Token> tokenize(const string& s) {
 	ull nesting = 0;	// are we inside a "(" .. ")", how deep?
 
 	istringstream sin{ s };
-	while (true) {
-		char token;
-		sin >> token;
-
-		if (!sin) {
-			break;
-		}
-
+	for (char token; sin >> token; ) {
 		switch (token) {
 		case '+':
 			toks.push_back(Token{ Token_type::plus });
