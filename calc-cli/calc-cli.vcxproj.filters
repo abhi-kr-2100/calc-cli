@@ -18,5 +18,11 @@
     <ClCompile Include="calc-cli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="grammar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="token.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
