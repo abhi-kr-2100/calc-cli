@@ -31,7 +31,7 @@ double expression(const Token_iter& s, const Token_iter& e) {
 			++nesting;
 			break;
 		case Token_type::p_open:
-			++nesting;
+			--nesting;
 			break;
 		case Token_type::plus:
 			if (!nesting) {
