@@ -51,6 +51,8 @@ int main() {
 			cerr << error << "not a valid number.";
 		} catch (Divide_by_zero&) {
 			cerr << error << "can't divide by zero.";
+		} catch (Unsupported_operand&) {
+			cerr << error << "operation not supported by operand.";
 		}
 
 		cout << "\n";
