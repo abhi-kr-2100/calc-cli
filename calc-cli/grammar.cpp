@@ -15,6 +15,8 @@
 #include "token.hpp"
 #include "exceptions.hpp"
 
+#include <iostream>
+
 
 using ull = unsigned long long;
 
@@ -67,7 +69,7 @@ double term(const Token_iter& s, const Token_iter& e) {
 			++nesting;
 			break;
 		case Token_type::p_open:
-			++nesting;
+			--nesting;
 			break;
 		case Token_type::multiply:
 			if (!nesting) {
