@@ -47,8 +47,8 @@ double Calculator::expression(const Token_iter& s,
 	for (auto i = e; i != s; ) {
 		--i;	// because we already start at one past the end
 				// don't put it in the condition as a postfix
-				// as it musn't be executed if the condition is false
-				// to begin with
+				// as it musn't be executed when the condition
+				// becomes false
 
 		switch (i->type) {
 		case Token_type::p_close:
