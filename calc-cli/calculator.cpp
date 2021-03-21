@@ -11,7 +11,7 @@
  * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>			:= "+" <power> | "-" <power> | <power>
- * <power>			:= <primary> "^" <power> | <primary>
+ * <power>			:= <power> "^" <primary> | <primary>
  * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
  * <variable>		:= a group of letters with no underscore or digits allowed
@@ -117,6 +117,7 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 	ull nesting = 0;	// inside a "(" ... ")"? How deep?
 	for (auto i = e; i != s; ) {
 		--i;	// as i starts out pointing past the end
+				// see why i should be here in Calculator::expression
 
 		switch (i->type) {
 		case Token_type::p_close:
@@ -172,10 +173,30 @@ double Calculator::unary(const Token_iter& s, const Token_iter& e) {
 
 
 double Calculator::power(const Token_iter& s, const Token_iter& e) {
-	for (auto i = s; i != e; ++i) {
-		if (i->type == Token_type::power) {
-			return pow(primary(s, i), power(i + 1, e));
+	// look for a "^" from the end that doesn't occur inside
+	// parentheses
+	ull nesting = 0;	// inside a "(" ... ")"? How deep?
+	for (auto i = e; i != s; ) {
+		--i;	// as i starts out pointing past the end
+				// see why i should be here in Calculator::expression
+
+		switch (i->type) {
+		case Token_type::p_close:
+			++nesting;
+			break;
+		case Token_type::p_open:
+			--nesting;
+			break;
+		case Token_type::power:
+			if (!nesting) {
+				return pow(power(s, i), primary(i + 1, e));
+			}
+			break;
 		}
+	}	// search for <power> "^" <primary> fails
+
+	if (nesting) {
+		throw Unbalanced_parentheses{};
 	}
 
 	return primary(s, e);

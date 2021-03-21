@@ -21,9 +21,9 @@ Exponentiation is supported through the `^` operator. One or both operands may b
 > 2 ^ 2
 = 4
 > 2 ^ 2 ^ 3
-= 256
-> (2 ^ 2) ^ 3
 = 64
+> 2 ^ (2 ^ 3)
+= 256
 > -2 ^ 2
 = -4
 > (-2) ^ 2

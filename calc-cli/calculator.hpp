@@ -17,7 +17,7 @@
  * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>			:= "+" <power> | "-" <power> | <power>
- * <power>			:= <primary> "^" <power> | <primary>
+ * <power>			:= <power> "^" <primary> | <primary>
  * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
  * <variable>		:= a group of letters with no underscore or digits allowed
