@@ -32,6 +32,7 @@ using std::map;
 
 double evaluate(const string& expression, Calculator& calc);
 void clrscr();
+void display_help();
 void calculate(const string& input, Calculator& calc);
 void run(Calculator& calc);
 
@@ -41,6 +42,7 @@ constexpr auto answer = "= ";
 constexpr auto error = "Error: ";
 constexpr auto quit = "quit";
 constexpr auto clear = "clear";
+constexpr auto help = "help";
 
 
 constexpr double pi = 3.14159;
@@ -135,7 +137,15 @@ void run(Calculator& calc) {
 	} else if (input == clear) {
 		clrscr();
 		return;
+	} else if (input == help) {
+		display_help();
+		return;
 	}
 
 	calculate(input, calc);
+}
+
+
+void display_help() {
+	cout << "For help, see: https://github.com/abhi-kr-2100/calc-cli/blob/master/README.md" << '\n';
 }
