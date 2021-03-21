@@ -1,8 +1,9 @@
 /**
  * calc-cli is a command-line calculator.
  * 
- * It supports addition, subtraction, multiplication, and division
- * along with parentheses to change the order of evaluation.
+ * It supports addition, subtraction, multiplication, division, and
+ * factorial of positive integers along with parentheses to change
+ * the order of evaluation.
  */
 
 
