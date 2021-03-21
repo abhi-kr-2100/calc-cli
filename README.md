@@ -64,4 +64,13 @@ The only changing variable in `calc-cli` is `_` (the underscore). It stores the 
 = 11
 ```
 
+To find the factorial of an expression, simply add `!` to the end of it:
+
+```
+> 3!
+= 6
+> 3.2!
+= 7.75669
+```
+
 To quit, simply type `quit` and press enter. To clear the screen, type `clear` followed by the enter key.
