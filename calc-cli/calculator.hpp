@@ -38,6 +38,9 @@ private:
 	double term(const Token_iter& start, const Token_iter& end);
 	double unary(const Token_iter& start, const Token_iter& end);
 	double primary(const Token_iter& start, const Token_iter& end);
+
+	// result of the previous calculation
+	double prev;
 };
 
 

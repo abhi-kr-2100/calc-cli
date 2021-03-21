@@ -59,6 +59,9 @@ vector<Token> tokenize(const string& s) {
 			toks.push_back(Token{ Token_type::p_close });
 			--nesting;
 			break;
+		case '_':
+			toks.push_back(Token{ Token_type::previous });
+			break;
 		case '0': case '1': case '2': case '3': case '4':
 		case '5': case '6': case '7': case '8': case '9':
 		case '.': {	// floating-point literal may start with a "."

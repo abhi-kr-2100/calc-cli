@@ -11,7 +11,7 @@
  * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>		:= "+" <primary> | "-" <primary> | <primary>
  * <primary>	:= "(" <expression> ")" | <primary> "!" | <number>
- * <number>		:= a floating-point literal as used in C++ without unary + or -
+ * <number>		:= "_" | a floating-point literal as used in C++ without unary + or -
  */
 
 
@@ -33,7 +33,9 @@ double factorial(ull n);
 
 double Calculator::statement(const Token_iter& s,
 		const Token_iter& e) {
-	return expression(s, e);
+	auto result = expression(s, e);
+	prev = result;
+	return result;
 }
 
 
@@ -42,7 +44,12 @@ double Calculator::expression(const Token_iter& s,
 	// look for a "+" or "-" from the end that doesn't occur inside
 	// parentheses
 	ull nesting = 0;	// inside a "(" ... ")"? How deep?
-	for (auto i = e; i-- != s; ) {
+	for (auto i = e; i != s; ) {
+		--i;	// because we already start at one past the end
+				// don't put it in the condition as a postfix
+				// as it musn't be executed if the condition is false
+				// to begin with
+
 		switch (i->type) {
 		case Token_type::p_close:
 			++nesting;
@@ -155,6 +162,8 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 			throw Unbalanced_parentheses{};
 		}
 		return expression(s + 1, e - 1);
+	case Token_type::previous:
+		return prev;
 	default:
 		throw Unknown_token{};
 	}
