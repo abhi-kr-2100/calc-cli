@@ -35,8 +35,9 @@ using Token_iter = std::vector<Token>::const_iterator;
 
 class Calculator {
 public:
-	// user of calculator should only have to call the statement method
+	// users of calculator should only have to call statement
 	double statement(const Token_iter& start, const Token_iter& end);
+
 private:
 	double declaration(const Token_iter& start, const Token_iter& end);
 	double expression(const Token_iter& start, const Token_iter& end);

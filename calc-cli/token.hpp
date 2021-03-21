@@ -20,8 +20,9 @@ enum class Token_type {
 	number,
 	p_open, p_close,	// parentheses
 	factorial,
-	previous,
-	let,
+	previous,			// token which prints the value of the previous
+						// calculation
+	let,				// used to start a variable definition
 	variable,
 	assignment
 };

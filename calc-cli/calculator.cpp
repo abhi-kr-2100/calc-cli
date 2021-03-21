@@ -7,7 +7,7 @@
  * Calculator uses the following grammar:
  *
  * <statement>		:= <expression> | <declaration>
- * <declaration>	:= "let" <variable> = <expression>
+ * <declaration>	:= "let" <variable> "=" <expression>
  * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>			:= "+" <primary> | "-" <primary> | <primary>
@@ -18,7 +18,6 @@
 
 
 #include <cmath>
-#include <iostream>
 #include <string>
 
 #include "calculator.hpp"
@@ -28,13 +27,15 @@
 
 using std::string;
 using std::fmod;
-using std::cout;
+using std::tgamma;
 
 using ull = unsigned long long;
 
 
 bool is_operator(Token_type t);
-double factorial(ull n);
+bool is_unary(const Token_iter& current_index,
+	const Token_iter& start_index);
+double factorial(double n);
 
 
 double Calculator::statement(const Token_iter& s,
@@ -84,16 +85,14 @@ double Calculator::expression(const Token_iter& s,
 			break;
 		case Token_type::plus:
 			if (!nesting) {
-				// check that this plus is not a unary plus
-				if (!(i == s || is_operator((i - 1)->type))) {
+				if (!is_unary(i, s)) {
 					return expression(s, i) + term(i + 1, e);
 				}
 			}
 			break;
 		case Token_type::minus:
 			if (!nesting) {
-				// check that this minus is not a unary minus
-				if (!(i == s || is_operator((i - 1)->type))) {
+				if (!is_unary(i, s)) {
 					return expression(s, i) - term(i + 1, e);
 				}
 			}
@@ -133,7 +132,7 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 			if (!nesting) {
 				double u = unary(i + 1, e);
 				if (u == 0) {
-					throw Divide_by_zero{};
+					throw Unsupported_operand{};
 				}
 				return term(s, i) / u;
 			}
@@ -173,24 +172,21 @@ double Calculator::unary(const Token_iter& s, const Token_iter& e) {
 double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 	if ((e - 1)->type == Token_type::factorial) {
 		double n = primary(s, e - 1);
-		if (ull(n) != n) {
-			throw Unsupported_operand{};
-		}
-		return factorial(ull(n));
+		return factorial(n);
 	}
 
 	switch (s->type) {
 	case Token_type::number:
 		return s->value;
+	case Token_type::variable:
+		return evaluate_var(s->name);
+	case Token_type::previous:
+		return prev;
 	case Token_type::p_open:
 		if ((e - 1)->type != Token_type::p_close) {
 			throw Unbalanced_parentheses{};
 		}
 		return expression(s + 1, e - 1);
-	case Token_type::previous:
-		return prev;
-	case Token_type::variable:
-		return evaluate_var(s->name);
 	default:
 		throw Unknown_token{};
 	}
@@ -224,11 +220,14 @@ bool is_operator(Token_type t) {
 }
 
 
-double factorial(ull n) {
-	double r = 1;
-	for (ull i = 1; i <= n; ++i) {
-		r *= i;
-	}
+/**
+ * Return true if the operator at position curr is unary.
+ */
+bool is_unary(const Token_iter& curr, const Token_iter& start) {
+	return (curr == start) || is_operator((curr - 1)->type);
+}
 
-	return r;
+
+double factorial(double n) {
+	return tgamma(n + 1);
 }

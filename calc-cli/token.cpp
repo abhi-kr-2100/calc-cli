@@ -81,7 +81,7 @@ vector<Token> tokenize(const string& s) {
 			toks.push_back(Token{ Token_type::assignment });
 			break;
 		default:
-			if (isalpha(token)) {
+			if (isalpha(token)) {	// variable or "let"-variable definition
 				sin.putback(token);
 				string name = read_name(sin);
 				if (name == "let") {
