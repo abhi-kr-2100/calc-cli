@@ -1,6 +1,8 @@
 # calc-cli
 
-`calc-cli` is a powerful command-line calculator. It supports the basic four arithmetic operations, exponentiation, float mod, and float factorial (the gamma function). Results can be stored in user-defined variables. Pre-defined constants for popular mathematical constants are available as well. Additionally, to support quick calculations, a dynamic variable, _ (underscore) is provided which stores the result of the most recent successful calculation.
+`calc-cli` is a powerful command-line calculator. It supports the basic four arithmetic operations, exponentiation, float mod, and float factorial (the gamma function).
+
+Results can be stored in user-defined variables. Pre-defined constants for popular mathematical constants are available as well. Additionally, to support quick calculations, a dynamic variable, `_` (underscore) is provided which stores the result of the most recent successful calculation.
 
 Pre-defined functions are a planned feature.
 
