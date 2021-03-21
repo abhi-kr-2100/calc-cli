@@ -35,6 +35,13 @@ using Token_iter = std::vector<Token>::const_iterator;
 
 class Calculator {
 public:
+	Calculator() {}
+	Calculator(const std::map<std::string, double>& consts) {
+		for (const auto& c : consts) {
+			variables[c.first] = c.second;
+		}
+	}
+
 	// users of calculator should only have to call statement
 	double statement(const Token_iter& start, const Token_iter& end);
 

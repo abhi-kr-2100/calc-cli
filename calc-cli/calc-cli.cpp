@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <cmath>
+#include <map>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -25,6 +27,7 @@ using std::cerr;
 using std::getline;
 using std::string;
 using std::exit;
+using std::map;
 
 
 double evaluate(const string& expression, Calculator& calc);
@@ -40,8 +43,19 @@ constexpr auto quit = "quit";
 constexpr auto clear = "clear";
 
 
+constexpr double pi = 3.14159;
+constexpr double e = 2.71828;
+constexpr double phi = 1.61803;
+
+
 int main() {
-	Calculator calc{};
+	map<string, double> consts{
+		{"pi", pi},
+		{"e", e},
+		{"phi", phi}
+	};
+
+	Calculator calc{ consts };
 
 	while (true) {
 		run(calc);
