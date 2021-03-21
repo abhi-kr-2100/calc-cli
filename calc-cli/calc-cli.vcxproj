@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="calc-cli.cpp" />
-    <ClCompile Include="grammar.cpp" />
+    <ClCompile Include="calculator.cpp" />
     <ClCompile Include="token.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

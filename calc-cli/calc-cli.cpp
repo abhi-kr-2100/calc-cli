@@ -14,8 +14,8 @@
 #include <Windows.h>
 #endif
 
+#include "calculator.hpp"
 #include "token.hpp"
-#include "grammar.hpp"
 #include "exceptions.hpp"
 
 
@@ -26,7 +26,7 @@ using std::getline;
 using std::string;
 
 
-double evaluate(const string& expression);
+double evaluate(const string& expression, Calculator& calc);
 void clrscr();
 
 
@@ -37,6 +37,7 @@ int main() {
 	constexpr auto quit = "quit";
 	constexpr auto clear = "clear";
 
+	Calculator calc{};
 	while (true) {
 		cout << prompt;
 		string input;
@@ -52,7 +53,7 @@ int main() {
 		}
 
 		try {
-			cout << answer << evaluate(input);
+			cout << answer << evaluate(input, calc);
 		} catch (Unbalanced_parentheses&) {
 			cerr << error << "unbalanced parentheses.";
 		} catch (Unknown_token&) {
@@ -73,9 +74,9 @@ int main() {
 /**
  * Return the value of a math expression.
  */
-double evaluate(const string& s) {
+double evaluate(const string& s, Calculator& calc) {
 	auto tokens = tokenize(s);
-	return expression(tokens.begin(), tokens.end());
+	return calc.statement(tokens.begin(), tokens.end());
 }
 
 
