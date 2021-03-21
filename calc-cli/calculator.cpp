@@ -7,10 +7,11 @@
  * Calculator uses the following grammar:
  *
  * <statement>		:= <expression> | <declaration>
- * <declaration>	:= "let" <variable> "=" <expression>
+ * <declaration>	:= "let" <variable> = <expression>
  * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
- * <unary>			:= "+" <primary> | "-" <primary> | <primary>
+ * <unary>			:= "+" <power> | "-" <power> | <power>
+ * <power>			:= <primary> "^" <power> | <primary>
  * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
  * <variable>		:= a group of letters with no underscore or digits allowed
@@ -28,6 +29,7 @@
 using std::string;
 using std::fmod;
 using std::tgamma;
+using std::pow;
 
 using ull = unsigned long long;
 
@@ -160,12 +162,23 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 double Calculator::unary(const Token_iter& s, const Token_iter& e) {
 	switch (s->type) {
 	case Token_type::plus:
-		return +primary(s + 1, e);
+		return +power(s + 1, e);
 	case Token_type::minus:
-		return -primary(s + 1, e);
+		return -power(s + 1, e);
 	default:
-		return primary(s, e);
+		return power(s, e);
 	}
+}
+
+
+double Calculator::power(const Token_iter& s, const Token_iter& e) {
+	for (auto i = s; i != e; ++i) {
+		if (i->type == Token_type::power) {
+			return pow(primary(s, i), power(i + 1, e));
+		}
+	}
+
+	return primary(s, e);
 }
 
 

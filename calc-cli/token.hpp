@@ -16,7 +16,7 @@
 
 
 enum class Token_type {
-	plus, minus, multiply, divide, mod,
+	plus, minus, multiply, divide, mod, power,
 	number,
 	p_open, p_close,	// parentheses
 	factorial,

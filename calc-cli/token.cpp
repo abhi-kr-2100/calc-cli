@@ -54,6 +54,9 @@ vector<Token> tokenize(const string& s) {
 		case '%':
 			toks.push_back(Token{ Token_type::mod });
 			break;
+		case '^':
+			toks.push_back(Token{ Token_type::power });
+			break;
 		case '(':
 			toks.push_back(Token{ Token_type::p_open });
 			++nesting;

@@ -16,7 +16,8 @@
  * <declaration>	:= "let" <variable> = <expression>
  * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
  * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
- * <unary>			:= "+" <primary> | "-" <primary> | <primary>
+ * <unary>			:= "+" <power> | "-" <power> | <power>
+ * <power>			:= <primary> "^" <power> | <primary>
  * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
  * <variable>		:= a group of letters with no underscore or digits allowed
@@ -50,6 +51,7 @@ private:
 	double expression(const Token_iter& start, const Token_iter& end);
 	double term(const Token_iter& start, const Token_iter& end);
 	double unary(const Token_iter& start, const Token_iter& end);
+	double power(const Token_iter& start, const Token_iter& end);
 	double primary(const Token_iter& start, const Token_iter& end);
 
 	void define_var(const std::string& name, double value);
