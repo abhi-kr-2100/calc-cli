@@ -20,13 +20,17 @@ enum class Token_type {
 	number,
 	p_open, p_close,	// parentheses
 	factorial,
-	previous
+	previous,
+	let,
+	variable,
+	assignment
 };
 
 
 struct Token {
 	Token_type type;
-	double value;	// used only in case type is Token_type::number
+	double value;		// used only in case type is Token_type::number
+	std::string name;	// used only when type is Token_type::variable
 };
 
 

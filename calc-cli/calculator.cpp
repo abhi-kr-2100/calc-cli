@@ -6,23 +6,29 @@
  * 
  * Calculator uses the following grammar:
  *
- * <statement>	:= <expression>
- * <expression> := <expression> "+" <term> | <expression> "-" <term> | <term>
- * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
- * <unary>		:= "+" <primary> | "-" <primary> | <primary>
- * <primary>	:= "(" <expression> ")" | <primary> "!" | <number>
- * <number>		:= "_" | a floating-point literal as used in C++ without unary + or -
+ * <statement>		:= <expression> | <declaration>
+ * <declaration>	:= "let" <variable> = <expression>
+ * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
+ * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
+ * <unary>			:= "+" <primary> | "-" <primary> | <primary>
+ * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
+ * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
+ * <variable>		:= a group of letters with no underscore or digits allowed
  */
 
 
 #include <cmath>
+#include <iostream>
+#include <string>
 
 #include "calculator.hpp"
 #include "token.hpp"
 #include "exceptions.hpp"
 
 
+using std::string;
 using std::fmod;
+using std::cout;
 
 using ull = unsigned long long;
 
@@ -33,9 +39,28 @@ double factorial(ull n);
 
 double Calculator::statement(const Token_iter& s,
 		const Token_iter& e) {
-	auto result = expression(s, e);
+	auto result = (s->type == Token_type::let) ? declaration(s, e) :
+		expression(s, e);
+
 	prev = result;
 	return result;
+}
+
+
+double Calculator::declaration(const Token_iter& s,
+		const Token_iter& e) {
+	if (s->type != Token_type::let ||
+			(s + 1)->type != Token_type::variable ||
+			(s + 2)->type != Token_type::assignment) {
+		throw Syntax_error{};
+	}
+
+	string name = (s + 1)->name;
+	double val = expression(s + 3, e);
+
+	define_var(name, val);
+
+	return val;
 }
 
 
@@ -164,9 +189,29 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 		return expression(s + 1, e - 1);
 	case Token_type::previous:
 		return prev;
+	case Token_type::variable:
+		return evaluate_var(s->name);
 	default:
 		throw Unknown_token{};
 	}
+}
+
+
+void Calculator::define_var(const string& name, double val) {
+	if (variables.find(name) != variables.end()) {
+		throw Redeclaration_of_variable{};
+	}
+
+	variables[name] = val;
+}
+
+
+double Calculator::evaluate_var(const string& name) {
+	if (variables.find(name) == variables.end()) {
+		throw Variable_not_defined{};
+	}
+
+	return variables[name];
 }
 
 

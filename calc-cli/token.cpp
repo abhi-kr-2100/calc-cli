@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cctype>
 
 #include "token.hpp"
 #include "exceptions.hpp"
@@ -18,11 +19,13 @@ using namespace std::literals::string_literals;
 using std::vector;
 using std::string;
 using std::istringstream;
+using std::isalpha;
 
 using ull = unsigned long long;
 
 
 double read_number(istringstream& source, char start);
+string read_name(istringstream& source);
 
 
 /**
@@ -74,8 +77,21 @@ vector<Token> tokenize(const string& s) {
 		case '!':
 			toks.push_back(Token{ Token_type::factorial });
 			break;
+		case '=':
+			toks.push_back(Token{ Token_type::assignment });
+			break;
 		default:
-			throw Unknown_token{};
+			if (isalpha(token)) {
+				sin.putback(token);
+				string name = read_name(sin);
+				if (name == "let") {
+					toks.push_back(Token{ Token_type::let });
+				} else {
+					toks.push_back(Token{ Token_type::variable, 0, name});
+				}
+			} else {
+				throw Unknown_token{};
+			}
 		}
 	}
 
@@ -87,7 +103,7 @@ vector<Token> tokenize(const string& s) {
 }
 
 
-double read_number(istringstream& in, char c) {
+double read_number(istringstream& in, char) {
 	double n;
 	in >> n;
 
@@ -96,4 +112,17 @@ double read_number(istringstream& in, char c) {
 	}
 
 	return n;
+}
+
+
+string read_name(istringstream& in) {
+	string name;
+
+	char c;
+	while (in.get(c) && isalpha(c)) {
+		name += c;
+	}
+	in.putback(c);
+
+	return name;
 }

@@ -64,6 +64,12 @@ int main() {
 			cerr << error << "can't divide by zero.";
 		} catch (Unsupported_operand&) {
 			cerr << error << "operation not supported by operand.";
+		} catch (Syntax_error&) {
+			cerr << error << "syntax error.";
+		} catch (Redeclaration_of_variable&) {
+			cerr << error << "variable already exists.";
+		} catch (Variable_not_defined&) {
+			cerr << error << "no such variable.";
 		}
 
 		cout << "\n";
