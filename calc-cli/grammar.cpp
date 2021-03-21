@@ -5,17 +5,21 @@
  * according to the following grammar:
  * 
  * <expression> := <expression> "+" <term> | <expression> "-" <term> | <term>
- * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <unary>
+ * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>		:= "+" <primary> | "-" <primary> | <primary>
  * <primary>	:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>		:= a floating-point literal as used in C++ without unary + or -
  */
 
 
+#include <cmath>
+
 #include "grammar.hpp"
 #include "token.hpp"
 #include "exceptions.hpp"
 
+
+using std::fmod;
 
 using ull = unsigned long long;
 
@@ -87,16 +91,24 @@ double term(const Token_iter& s, const Token_iter& e) {
 			break;
 		case Token_type::divide:
 			if (!nesting) {
-				double p = unary(i + 1, e);
-				if (p == 0) {
+				double u = unary(i + 1, e);
+				if (u == 0) {
 					throw Divide_by_zero{};
 				}
-				return term(s, i) / p;
+				return term(s, i) / u;
 			}
 			break;
+		case Token_type::mod:
+			if (!nesting) {
+				double u = unary(i + 1, e);
+				if (u == 0) {
+					throw Unsupported_operand{};
+				}
+				return fmod(term(s, i), u);
+			}
 		}
 	}	// search for <term> "*" <unary> or
-		// <term> "/" <unary> fails
+		// <term> "/" <unary> fails or <term> "%" <unary> fails
 
 	if (nesting) {
 		throw Unbalanced_parentheses{};

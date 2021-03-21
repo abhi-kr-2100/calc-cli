@@ -10,7 +10,7 @@
  * grammar.hpp uses the following grammar:
  * 
  * <expression> := <expression> "+" <term> | <expression> "-" <term> | <term>
- * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <unary>
+ * <term>		:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
  * <unary>		:= "+" <primary> | "-" <primary> | <primary>
  * <primary>	:= "(" <expression> ")" | <primary> "!" | <number>
  * <number>		:= a floating-point literal as used in C++ without unary + or -
