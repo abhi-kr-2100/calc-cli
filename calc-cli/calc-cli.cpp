@@ -51,7 +51,7 @@ constexpr double phi = 1.61803;
 
 
 int main() {
-	map<string, double> consts{
+	const map<string, double> consts{
 		{"pi", pi},
 		{"e", e},
 		{"phi", phi}
