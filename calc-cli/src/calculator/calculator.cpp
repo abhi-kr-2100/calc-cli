@@ -204,9 +204,13 @@ double Calculator::primary(const Token_iter& s,
 vector<double> Calculator::arguments(const Token_iter& s,
 		const Token_iter& e) {
 
-	auto p = backward_find(s, e, { Token_type::arg_separator });
-	if (p == e) {
-		return { expression(s + 1, e - 1) };
+	// don't pass the enclosing [/]s
+	auto p = backward_find(s + 1, e - 1, { Token_type::arg_separator });
+
+	if (p == (e - 1)) {
+		// ] gets passed to expression as it's the end term
+		// end terms are assumed to contain non-useful information
+		return { expression(s + 1, e) };
 	} else {
 		auto args = arguments(s, p);
 		auto exp = expression(p + 1, e);
