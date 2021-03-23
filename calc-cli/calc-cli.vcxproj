@@ -28,6 +28,7 @@
     <ClInclude Include="src\calculator\calculator.hpp" />
     <ClInclude Include="src\calculator\exceptions\exceptions.hpp" />
     <ClInclude Include="src\calculator\token\token.hpp" />
+    <ClInclude Include="src\utils\functions.hpp" />
     <ClInclude Include="src\utils\utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

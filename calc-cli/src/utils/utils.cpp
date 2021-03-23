@@ -16,6 +16,8 @@
 #endif
 
 #include "utils.hpp"
+#include "constants.hpp"
+#include "functions.hpp"
 #include "../calculator/exceptions/exceptions.hpp"
 #include "../calculator/token/token.hpp"
 
@@ -51,120 +53,12 @@ void display_help() {
 
 
 /**
- * Return a map<name, value> of useful mathematical constants.
- */
-std::map<std::string, double> get_consts() {
-	constexpr double pi = 3.14159;
-	constexpr double e = 2.71828;
-	constexpr double phi = 1.61803;
-
-	const std::map<std::string, double> consts{
-		{"pi", pi},
-		{"e", e},
-		{"phi", phi}
-	};
-
-	return consts;
-}
-
-
-
-double cos_func(const std::vector<double> args);
-double tan_func(const std::vector<double> args);
-double sec_func(const std::vector<double> args);
-double csc_func(const std::vector<double> args);
-double sin_func(const std::vector<double> args);
-double cot_func(const std::vector<double> args);
-
-
-/**
- * Return a map<name, function> of useful mathematical functions.
- */
-std::map<std::string, Calc_func> get_funcs() {
-	const Calc_func c_sin = sin_func;
-	const Calc_func c_cos = cos_func;
-	const Calc_func c_tan = tan_func;
-	const Calc_func c_sec = sec_func;
-	const Calc_func c_csc = csc_func;
-	const Calc_func c_cot = cot_func;
-
-	const std::map<std::string, Calc_func> funcs{
-		{"sin", c_sin},
-		{"cos", c_cos},
-		{"tan", c_tan},
-		{"sec", c_sec},
-		{"csc", c_csc},
-		{"cot", c_cot}
-	};
-
-	return funcs;
-}
-
-
-
-double sin_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::sin(args[0]);
-}
-
-double cos_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::cos(args[0]);
-}
-
-double tan_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::tan(args[0]);
-}
-
-double sec_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::cos(args[0]);
-}
-
-double csc_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::sin(args[0]);
-}
-
-double cot_func(const std::vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::tan(args[0]);
-}
-
-/**
  * Return the value of a math expression.
  */
 double evaluate(const std::string& s, Calculator& calc) {
 	auto tokens = tokenize(s);
 	return calc.statement(tokens.begin(), tokens.end());
 }
-
-
-constexpr auto prompt = "> ";
-constexpr auto answer = "= ";
-constexpr auto error = "Error: ";
-constexpr auto quit = "quit";
-constexpr auto clear = "clear";
-constexpr auto help = "help";
 
 
 /**
