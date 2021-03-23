@@ -17,6 +17,7 @@
 
 #include "utils.hpp"
 #include "calculator/exceptions/exceptions.hpp"
+#include "calculator/token/token.hpp"
 
 
 /**
@@ -143,4 +144,82 @@ double cot_func(const std::vector<double> args) {
 	}
 
 	return 1 / std::tan(args[0]);
+}
+
+/**
+ * Return the value of a math expression.
+ */
+double evaluate(const std::string& s, Calculator& calc) {
+	auto tokens = tokenize(s);
+	return calc.statement(tokens.begin(), tokens.end());
+}
+
+
+constexpr auto prompt = "> ";
+constexpr auto answer = "= ";
+constexpr auto error = "Error: ";
+constexpr auto quit = "quit";
+constexpr auto clear = "clear";
+constexpr auto help = "help";
+
+
+/**
+ * Helper function to display the value of an expression, and handle
+ * resulting exceptions.
+ */
+void calculate(const std::string& input, Calculator& calc) {
+	try {
+		std::cout << answer << evaluate(input, calc);
+	}
+	catch (Unbalanced_parentheses&) {
+		std::cerr << error << "unbalanced parentheses.";
+	}
+	catch (Unknown_token&) {
+		std::cerr << error << "unknown token.";
+	}
+	catch (Bad_literal&) {
+		std::cerr << error << "not a valid number.";
+	}
+	catch (Unsupported_operand&) {
+		std::cerr << error << "operation not supported by operand.";
+	}
+	catch (Syntax_error&) {
+		std::cerr << error << "syntax error.";
+	}
+	catch (Redeclaration_of_variable&) {
+		std::cerr << error << "variable already exists.";
+	}
+	catch (Variable_not_defined&) {
+		std::cerr << error << "no such variable.";
+	}
+
+	std::cout << "\n";
+}
+
+
+/**
+ * Take input, and produce the right output.
+ */
+void run(Calculator& calc) {
+
+	std::cout << prompt;
+	std::string input;
+	std::getline(std::cin, input);
+
+	if (input.size() == 0) {
+		return;
+	}
+	else if (input == quit) {
+		std::exit(0);
+	}
+	else if (input == clear) {
+		clrscr();
+		return;
+	}
+	else if (input == help) {
+		display_help();
+		return;
+	}
+
+	calculate(input, calc);
 }

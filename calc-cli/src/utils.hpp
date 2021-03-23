@@ -22,6 +22,9 @@ void display_help();
 std::map<std::string, double> get_consts();
 std::map<std::string, Calc_func> get_funcs();
 
+double evaluate(const std::string& expression, Calculator& calc);
+void calculate(const std::string& input, Calculator& calc);
+void run(Calculator& calc);
+
 
 #endif // !CALC_CLI_UTILS_HPP
-
