@@ -16,8 +16,8 @@
 #endif
 
 #include "utils.hpp"
-#include "calculator/exceptions/exceptions.hpp"
-#include "calculator/token/token.hpp"
+#include "../calculator/exceptions/exceptions.hpp"
+#include "../calculator/token/token.hpp"
 
 
 /**
@@ -41,6 +41,10 @@ void clrscr() {
 }
 
 
+/**
+ * Display instructions on how to use calc-cli to the standard
+ * output.
+ */
 void display_help() {
 	std::cout << "For help, see: https://github.com/abhi-kr-2100/calc-cli/blob/master/README.md" << '\n';
 }

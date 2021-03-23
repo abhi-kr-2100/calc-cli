@@ -13,7 +13,7 @@
 #include <map>
 #include <string>
 
-#include "calculator/calculator.hpp"
+#include "../calculator/calculator.hpp"
 
 
 void clrscr();

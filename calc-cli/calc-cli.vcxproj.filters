@@ -24,7 +24,7 @@
     <ClCompile Include="src\calculator\token\token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils.cpp">
+    <ClCompile Include="src\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="src\calculator\calculator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils.hpp">
+    <ClInclude Include="src\utils\utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
