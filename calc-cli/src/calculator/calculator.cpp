@@ -13,13 +13,17 @@
  * <unary>			:= "+" <power> | "-" <power> | <power>
  * <power>			:= <power> "^" <primary> | <primary>
  * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
- * <number>			:= <variable> | "_" | a floating-point literal as used in C++ without unary + or -
+ * <number>			:= <call> | <variable> | "_" | a floating-point literal as used in C++ without unary + or -
+ * <call>			:= <function> "[" <arguments> "]"
+ * <function>		:= a group of letters with no underscore or digits allowed
+ * <arguments>		:= <expression> | <arguments> "," <expression>
  * <variable>		:= a group of letters with no underscore or digits allowed
  */
 
 
 #include <cmath>
 #include <string>
+#include <vector>
 
 #include "calculator.hpp"
 #include "token/token.hpp"
@@ -30,6 +34,7 @@ using std::string;
 using std::fmod;
 using std::tgamma;
 using std::pow;
+using std::vector;
 
 using ull = unsigned long long;
 
@@ -72,6 +77,8 @@ double Calculator::expression(const Token_iter& s,
 	// look for a "+" or "-" from the end that doesn't occur inside
 	// parentheses
 	ull nesting = 0;	// inside a "(" ... ")"? How deep?
+	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
+
 	for (auto i = e; i != s; ) {
 		--i;	// because we already start at one past the end
 				// don't put it in the condition as a postfix
@@ -84,6 +91,12 @@ double Calculator::expression(const Token_iter& s,
 			break;
 		case Token_type::p_open:
 			--nesting;
+			break;
+		case Token_type::arg_delim_close:
+			++fnesting;
+			break;
+		case Token_type::arg_delim_open:
+			--fnesting;
 			break;
 		case Token_type::plus:
 			if (!nesting) {
@@ -103,7 +116,7 @@ double Calculator::expression(const Token_iter& s,
 	}	// search for <expression> "+" <term> or
 		// <expression> "-" <term> fails
 
-	if (nesting) {
+	if (nesting || fnesting) {
 		throw Unbalanced_parentheses{};
 	}
 
@@ -115,6 +128,8 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 	// look for a "*" or "/" from the end that doesn't occur inside
 	// parentheses
 	ull nesting = 0;	// inside a "(" ... ")"? How deep?
+	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
+
 	for (auto i = e; i != s; ) {
 		--i;	// as i starts out pointing past the end
 				// see why i should be here in Calculator::expression
@@ -125,6 +140,12 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 			break;
 		case Token_type::p_open:
 			--nesting;
+			break;
+		case Token_type::arg_delim_close:
+			++fnesting;
+			break;
+		case Token_type::arg_delim_open:
+			--fnesting;
 			break;
 		case Token_type::multiply:
 			if (!nesting) {
@@ -152,7 +173,7 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 	}	// search for <term> "*" <unary> or
 		// <term> "/" <unary> fails or <term> "%" <unary> fails
 
-	if (nesting) {
+	if (nesting || fnesting) {
 		throw Unbalanced_parentheses{};
 	}
 
@@ -176,6 +197,7 @@ double Calculator::power(const Token_iter& s, const Token_iter& e) {
 	// look for a "^" from the end that doesn't occur inside
 	// parentheses
 	ull nesting = 0;	// inside a "(" ... ")"? How deep?
+	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
 	for (auto i = e; i != s; ) {
 		--i;	// as i starts out pointing past the end
 				// see why i should be here in Calculator::expression
@@ -187,6 +209,12 @@ double Calculator::power(const Token_iter& s, const Token_iter& e) {
 		case Token_type::p_open:
 			--nesting;
 			break;
+		case Token_type::arg_delim_close:
+			++fnesting;
+			break;
+		case Token_type::arg_delim_open:
+			--fnesting;
+			break;
 		case Token_type::power:
 			if (!nesting) {
 				return pow(power(s, i), primary(i + 1, e));
@@ -195,7 +223,7 @@ double Calculator::power(const Token_iter& s, const Token_iter& e) {
 		}
 	}	// search for <power> "^" <primary> fails
 
-	if (nesting) {
+	if (nesting || fnesting) {
 		throw Unbalanced_parentheses{};
 	}
 
@@ -213,6 +241,12 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 	case Token_type::number:
 		return s->value;
 	case Token_type::variable:
+		if (s != (e - 1) && (s + 1)->type == Token_type::arg_delim_open) {
+			if ((e - 1)->type != Token_type::arg_delim_close) {
+				throw Unbalanced_parentheses{};
+			}
+			return invoke_fn(s->name, arguments(s + 1, e));
+		}
 		return evaluate_var(s->name);
 	case Token_type::previous:
 		return prev;
@@ -224,6 +258,47 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 	default:
 		throw Unknown_token{};
 	}
+}
+
+
+vector<double> Calculator::arguments(const Token_iter& s,
+		const Token_iter& e) {
+	// look for a "," from the end that doesn't occur inside
+	// parentheses
+	ull nesting = 0;	// inside a "(" ... ")"? How deep?
+	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
+
+	for (auto i = e; i != s; ) {
+		--i;	// as i starts out pointing past the end
+				// see why i should be here in Calculator::expression
+
+		switch (i->type) {
+		case Token_type::p_close:
+			++nesting;
+			break;
+		case Token_type::p_open:
+			--nesting;
+			break;
+		case Token_type::arg_delim_close:
+			++fnesting;
+			break;
+		case Token_type::arg_delim_open:
+			--fnesting;
+			break;
+		case Token_type::arg_separator: {
+			vector<double> args = arguments(s, i);
+			args.push_back(expression(i + 1, e));
+			return args;
+		}
+		}
+	}	// search for <arguments> "," <expression> fails
+
+	if (nesting || fnesting) {
+		throw Unbalanced_parentheses{};
+	}
+	
+	double arg = expression(s + 1, e - 1);
+	return { arg };
 }
 
 
@@ -242,6 +317,16 @@ double Calculator::evaluate_var(const string& name) {
 	}
 
 	return variables[name];
+}
+
+
+double Calculator::invoke_fn(const std::string& name,
+		const std::vector<double>& args) {
+	if (funcs.find(name) == funcs.end()) {
+		throw Variable_not_defined{};
+	}
+
+	return funcs[name](args);
 }
 
 

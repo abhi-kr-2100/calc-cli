@@ -11,6 +11,8 @@
 #include <cstdlib>
 #include <cmath>
 #include <map>
+#include <functional>
+#include <vector>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -28,6 +30,8 @@ using std::getline;
 using std::string;
 using std::exit;
 using std::map;
+using std::function;
+using std::vector;
 
 
 double evaluate(const string& expression, Calculator& calc);

@@ -35,6 +35,7 @@ string read_name(istringstream& source);
 vector<Token> tokenize(const string& s) {
 	vector<Token> toks;
 	ull nesting = 0;	// are we inside a "(" .. ")", how deep?
+	ull fnesting = 0;	// are we inside a "[" .. "]", how deep?
 
 	istringstream sin{ s };
 	for (char token; sin >> token; ) {
@@ -64,6 +65,17 @@ vector<Token> tokenize(const string& s) {
 		case ')':
 			toks.push_back(Token{ Token_type::p_close });
 			--nesting;
+			break;
+		case '[':
+			toks.push_back(Token{ Token_type::arg_delim_open });
+			++fnesting;
+			break;
+		case ']':
+			toks.push_back(Token{ Token_type::arg_delim_close });
+			--fnesting;
+			break;
+		case ',':
+			toks.push_back(Token{ Token_type::arg_separator });
 			break;
 		case '_':
 			toks.push_back(Token{ Token_type::previous });
@@ -98,7 +110,7 @@ vector<Token> tokenize(const string& s) {
 		}
 	}
 
-	if (nesting) {
+	if (nesting || fnesting) {
 		throw Unbalanced_parentheses{};
 	}
 

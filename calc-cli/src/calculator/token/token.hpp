@@ -24,13 +24,16 @@ enum class Token_type {
 						// calculation
 	let,				// used to start a variable definition
 	variable,
-	assignment
+	assignment,
+	arg_delim_open, arg_delim_close,	// used to delimit arguments
+										// to a function
+	arg_separator
 };
 
 
 struct Token {
 	Token_type type;
-	double value;		// used only in case type is Token_type::number
+	double value;		// used only when type is Token_type::number
 	std::string name;	// used only when type is Token_type::variable
 };
 
