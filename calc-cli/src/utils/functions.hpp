@@ -17,12 +17,43 @@ void check_args(const std::vector<double> args, std::size_t n) {
 }
 
 
+double sin_func(const std::vector<double> args);
 double cos_func(const std::vector<double> args);
 double tan_func(const std::vector<double> args);
-double sec_func(const std::vector<double> args);
 double csc_func(const std::vector<double> args);
-double sin_func(const std::vector<double> args);
+double sec_func(const std::vector<double> args);
 double cot_func(const std::vector<double> args);
+
+double asin_func(const std::vector<double> args);
+double acos_func(const std::vector<double> args);
+double atan_func(const std::vector<double> args);
+double acsc_func(const std::vector<double> args);
+double asec_func(const std::vector<double> args);
+double acot_func(const std::vector<double> args);
+
+double sinh_func(const std::vector<double> args);
+double cosh_func(const std::vector<double> args);
+double tanh_func(const std::vector<double> args);
+double csch_func(const std::vector<double> args);
+double sech_func(const std::vector<double> args);
+double coth_func(const std::vector<double> args);
+
+double asinh_func(const std::vector<double> args);
+double acosh_func(const std::vector<double> args);
+double atanh_func(const std::vector<double> args);
+double acsch_func(const std::vector<double> args);
+double asech_func(const std::vector<double> args);
+double acoth_func(const std::vector<double> args);
+
+double ln_func(const std::vector<double> args);
+double log_func(const std::vector<double> args);
+double log2_func(const std::vector<double> args);
+
+double sqrt_func(const std::vector<double> args);
+double cbrt_func(const std::vector<double> args);
+
+double abs_func(const std::vector<double> args);
+double round_func(const std::vector<double> args);
 
 
 /**
@@ -30,12 +61,43 @@ double cot_func(const std::vector<double> args);
  */
 std::map<std::string, Calc_func> get_funcs() {
 	const std::map<std::string, Calc_func> funcs{
-		{"sin", sin_func},
-		{"cos", cos_func},
-		{"tan", tan_func},
-		{"sec", sec_func},
-		{"csc", csc_func},
-		{"cot", cot_func}
+		{ "sin", sin_func },
+		{ "cos", cos_func },
+		{ "tan", tan_func },
+		{ "csc", csc_func },
+		{ "sec", sec_func },
+		{ "cot", cot_func },
+
+		{ "asin", asin_func },
+		{ "acos", acos_func },
+		{ "atan", atan_func },
+		{ "acsc", acsc_func },
+		{ "asec", asec_func },
+		{ "acot", acot_func },
+
+		{ "sinh", sinh_func },
+		{ "cosh", cosh_func },
+		{ "tanh", tanh_func },
+		{ "csch", csch_func },
+		{ "sech", sech_func },
+		{ "coth", coth_func },
+
+		{ "asinh", asinh_func },
+		{ "acosh", acosh_func },
+		{ "atanh", atanh_func },
+		{ "acsch", acsch_func },
+		{ "asech", asech_func },
+		{ "acoth", acoth_func },
+
+		{ "ln", ln_func },
+		{ "log", log_func },
+		{ "logb", log2_func },
+
+		{ "sqrt", sqrt_func },
+		{ "cbrt", cbrt_func },
+
+		{ "abs", abs_func },
+		{ "round", round_func }
 	};
 
 	return funcs;
@@ -57,14 +119,14 @@ double tan_func(const std::vector<double> args) {
 	return std::tan(args[0]);
 }
 
-double sec_func(const std::vector<double> args) {
-	check_args(args, 1);
-	return 1 / std::cos(args[0]);
-}
-
 double csc_func(const std::vector<double> args) {
 	check_args(args, 1);
 	return 1 / std::sin(args[0]);
+}
+
+double sec_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return 1 / std::cos(args[0]);
 }
 
 double cot_func(const std::vector<double> args) {
@@ -72,5 +134,135 @@ double cot_func(const std::vector<double> args) {
 	return 1 / std::tan(args[0]);
 }
 
+double asin_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::asin(args[0]);
+}
+
+double acos_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::acos(args[0]);
+}
+
+
+double atan_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::atan(args[0]);
+}
+
+double acsc_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::asin(1 / args[0]);
+}
+
+double asec_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::acos(1 / args[0]);
+}
+
+double acot_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::atan(1 / args[0]);
+}
+
+double sinh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::sinh(args[0]);
+}
+
+double cosh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::cosh(args[0]);
+}
+
+
+double tanh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::tanh(args[0]);
+}
+
+double csch_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return 1 / std::sinh(args[0]);
+}
+
+double sech_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return 1 / std::cosh(args[0]);
+}
+
+double coth_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return 1 / std::tanh(args[0]);
+}
+
+double asinh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::asinh(args[0]);
+}
+
+double acosh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::acosh(args[0]);
+}
+
+
+double atanh_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::atanh(args[0]);
+}
+
+double acsch_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::asinh(1 / args[0]);
+}
+
+double asech_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::acosh(1 / args[0]);
+}
+
+double acoth_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::atanh(1 / args[0]);
+}
+
+
+double ln_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::log(args[0]);
+}
+
+double log_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::log10(args[0]);
+}
+
+double log2_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::log2(args[0]);
+}
+
+
+double sqrt_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::sqrt(args[0]);
+}
+
+double cbrt_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::cbrt(args[0]);
+}
+
+
+double abs_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::fabs(args[0]);
+}
+
+double round_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::round(args[0]);
+}
 
 #endif // !CALC_CLI_FUNCTIONS_HPP
