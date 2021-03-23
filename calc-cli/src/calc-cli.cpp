@@ -54,6 +54,22 @@ constexpr double e = 2.71828;
 constexpr double phi = 1.61803;
 
 
+double sin_func(const vector<double> args);
+double cos_func(const vector<double> args);
+double tan_func(const vector<double> args);
+double sec_func(const vector<double> args);
+double csc_func(const vector<double> args);
+double cot_func(const vector<double> args);
+
+
+const Calc_func c_sin = sin_func;
+const Calc_func c_cos = cos_func;
+const Calc_func c_tan = tan_func;
+const Calc_func c_sec = sec_func;
+const Calc_func c_csc = csc_func;
+const Calc_func c_cot = cot_func;
+
+
 int main() {
 	const map<string, double> consts{
 		{"pi", pi},
@@ -61,7 +77,16 @@ int main() {
 		{"phi", phi}
 	};
 
-	Calculator calc{ consts };
+	const map<string, Calc_func> funcs{
+		{"sin", c_sin},
+		{"cos", c_cos},
+		{"tan", c_tan},
+		{"sec", c_sec},
+		{"csc", c_csc},
+		{"cot", c_cot}
+	};
+
+	Calculator calc{ consts, funcs };
 
 	while (true) {
 		run(calc);
@@ -152,4 +177,53 @@ void run(Calculator& calc) {
 
 void display_help() {
 	cout << "For help, see: https://github.com/abhi-kr-2100/calc-cli/blob/master/README.md" << '\n';
+}
+
+
+double sin_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return std::sin(args[0]);
+}
+
+double cos_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return std::cos(args[0]);
+}
+
+double tan_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return std::tan(args[0]);
+}
+
+double sec_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return 1 / std::cos(args[0]);
+}
+
+double csc_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return 1 / std::sin(args[0]);
+}
+
+double cot_func(const vector<double> args) {
+	if (args.size() != 1) {
+		throw Unsupported_operand{};
+	}
+
+	return 1 / std::tan(args[0]);
 }
