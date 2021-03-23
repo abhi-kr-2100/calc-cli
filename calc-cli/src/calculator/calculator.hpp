@@ -42,14 +42,8 @@ using Calc_func = std::function<double(const std::vector<double>&)>;
 class Calculator {
 public:
 	Calculator(const std::map<std::string, double>& consts={},
-			const std::map<std::string, Calc_func>& functions={}) {
-		for (const auto& c : consts) {
-			variables[c.first] = c.second;
-		}
-
-		for (const auto& f : functions) {
-			funcs[f.first] = f.second;
-		}
+			const std::map<std::string, Calc_func>& functions={})
+				:variables{ consts }, funcs{ functions } {
 	}
 
 	// users of calculator should only have to call statement
