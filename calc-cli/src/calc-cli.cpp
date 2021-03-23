@@ -2,7 +2,8 @@
  * calc-cli is a command-line calculator.
  * 
  * It supports the basic four functions, float modulus and float
- * factorial along with user-defined variables.
+ * factorial along with user-defined variables, and predefined
+ * constants and functions.
  */
 
 
