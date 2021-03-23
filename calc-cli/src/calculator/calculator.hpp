@@ -10,20 +10,7 @@
  * calculator state, and provides methods for parsing input and
  * performing calculations.
  * 
- * Calculator uses the following grammar:
- * 
- * <statement>		:= <expression> | <declaration>
- * <declaration>	:= "let" <variable> = <expression>
- * <expression>		:= <expression> "+" <term> | <expression> "-" <term> | <term>
- * <term>			:= <term> "*" <unary> | <term> "/" <unary> | <term> "%" <unary> | <unary>
- * <unary>			:= "+" <power> | "-" <power> | <power>
- * <power>			:= <power> "^" <primary> | <primary>
- * <primary>		:= "(" <expression> ")" | <primary> "!" | <number>
- * <number>			:= <call> | <variable> | "_" | a floating-point literal as used in C++ without unary + or -
- * <call>			:= <function> "[" <arguments> "]"
- * <function>		:= a group of letters with no underscore or digits allowed
- * <arguments>		:= <expression> | <arguments> "," <expression>
- * <variable>		:= a group of letters with no underscore or digits allowed
+ * See calculator.hpp for the grammar used to parse the input.
  */
 
 
@@ -50,26 +37,37 @@ public:
 	double statement(const Token_iter& start, const Token_iter& end);
 
 private:
-	double declaration(const Token_iter& start, const Token_iter& end);
-	double expression(const Token_iter& start, const Token_iter& end);
+	double declaration(const Token_iter& start,
+		const Token_iter& end);
+
+	double expression(const Token_iter& start,
+		const Token_iter& end);
+	
 	double term(const Token_iter& start, const Token_iter& end);
+	
 	double unary(const Token_iter& start, const Token_iter& end);
+	
 	double power(const Token_iter& start, const Token_iter& end);
+	
 	double primary(const Token_iter& start, const Token_iter& end);
+	
 	std::vector<double> arguments(const Token_iter& start,
 		const Token_iter& end);
+
 
 	// result of the previous calculation
 	double prev{};
 
+	
 	std::map<std::string, double> variables;
 
 	void define_var(const std::string& name, double value);
 	double evaluate_var(const std::string& name);
 
 
-	std::map<std::string,
-		std::function<double(const std::vector<double>&)>> funcs;
+	// predefined functions
+	std::map<std::string, Calc_func> funcs;
+
 	double invoke_fn(const std::string& name,
 		const std::vector<double>& args);
 };

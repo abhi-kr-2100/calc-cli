@@ -24,6 +24,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "calculator.hpp"
 #include "token/token.hpp"
@@ -31,24 +32,31 @@
 
 
 using std::string;
-using std::fmod;
-using std::tgamma;
-using std::pow;
 using std::vector;
 
 using ull = unsigned long long;
 
 
 bool is_operator(Token_type t);
+
 bool is_unary(const Token_iter& current_index,
 	const Token_iter& start_index);
+
 double factorial(double n);
+
+Token_iter backward_find(const Token_iter& start,
+	const Token_iter& end, const vector<Token_type>& to_find);
 
 
 double Calculator::statement(const Token_iter& s,
 		const Token_iter& e) {
-	auto result = (s->type == Token_type::let) ? declaration(s, e) :
-		expression(s, e);
+	
+	double result;
+	if (s->type == Token_type::let) {	// variable definition
+		result = declaration(s, e);
+	} else {
+		result = expression(s, e);
+	}
 
 	prev = result;
 	return result;
@@ -57,181 +65,109 @@ double Calculator::statement(const Token_iter& s,
 
 double Calculator::declaration(const Token_iter& s,
 		const Token_iter& e) {
+
+	// let (1) var (2) = (3) exp (4)
+	// a valid declaration must have all four parts
+	if (!(s + 1 == e || s + 2 == e || s + 3 == e)) {
+		throw Syntax_error{};
+	}
+
 	if (s->type != Token_type::let ||
 			(s + 1)->type != Token_type::variable ||
 			(s + 2)->type != Token_type::assignment) {
 		throw Syntax_error{};
 	}
 
-	string name = (s + 1)->name;
-	double val = expression(s + 3, e);
+	// at what position do (2) and (4) start
+	auto var_start = s + 1;
+	auto exp_start = s + 3;
+
+	string name = var_start->name;
+	double val = expression(exp_start, e);
 
 	define_var(name, val);
 
+	// result of a variable definition is the ultimate value
+	// assigned to the variable
 	return val;
 }
 
 
 double Calculator::expression(const Token_iter& s,
 		const Token_iter& e) {
-	// look for a "+" or "-" from the end that doesn't occur inside
-	// parentheses
-	ull nesting = 0;	// inside a "(" ... ")"? How deep?
-	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
 
-	for (auto i = e; i != s; ) {
-		--i;	// because we already start at one past the end
-				// don't put it in the condition as a postfix
-				// as it musn't be executed when the condition
-				// becomes false
-
-		switch (i->type) {
-		case Token_type::p_close:
-			++nesting;
-			break;
-		case Token_type::p_open:
-			--nesting;
-			break;
-		case Token_type::arg_delim_close:
-			++fnesting;
-			break;
-		case Token_type::arg_delim_open:
-			--fnesting;
-			break;
-		case Token_type::plus:
-			if (!nesting) {
-				if (!is_unary(i, s)) {
-					return expression(s, i) + term(i + 1, e);
-				}
-			}
-			break;
-		case Token_type::minus:
-			if (!nesting) {
-				if (!is_unary(i, s)) {
-					return expression(s, i) - term(i + 1, e);
-				}
-			}
-			break;
-		}
-	}	// search for <expression> "+" <term> or
-		// <expression> "-" <term> fails
-
-	if (nesting || fnesting) {
-		throw Unbalanced_parentheses{};
+	auto p = backward_find(s, e,
+		{ Token_type::plus, Token_type::minus });
+	if (p == e) {
+		return term(s, e);
+	} else if (p->type == Token_type::plus) {
+		return expression(s, p) + term(p + 1, e);
+	} else {
+		return expression(s, p) - term(p + 1, e);
 	}
-
-	return term(s, e);
 }
 
 
 double Calculator::term(const Token_iter& s, const Token_iter& e) {
-	// look for a "*" or "/" from the end that doesn't occur inside
-	// parentheses
-	ull nesting = 0;	// inside a "(" ... ")"? How deep?
-	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
+	using std::fmod;
 
-	for (auto i = e; i != s; ) {
-		--i;	// as i starts out pointing past the end
-				// see why i should be here in Calculator::expression
-
-		switch (i->type) {
-		case Token_type::p_close:
-			++nesting;
-			break;
-		case Token_type::p_open:
-			--nesting;
-			break;
-		case Token_type::arg_delim_close:
-			++fnesting;
-			break;
-		case Token_type::arg_delim_open:
-			--fnesting;
-			break;
-		case Token_type::multiply:
-			if (!nesting) {
-				return term(s, i) * unary(i + 1, e);
-			}
-			break;
-		case Token_type::divide:
-			if (!nesting) {
-				double u = unary(i + 1, e);
-				if (u == 0) {
-					throw Unsupported_operand{};
-				}
-				return term(s, i) / u;
-			}
-			break;
-		case Token_type::mod:
-			if (!nesting) {
-				double u = unary(i + 1, e);
-				if (u == 0) {
-					throw Unsupported_operand{};
-				}
-				return fmod(term(s, i), u);
-			}
-		}
-	}	// search for <term> "*" <unary> or
-		// <term> "/" <unary> fails or <term> "%" <unary> fails
-
-	if (nesting || fnesting) {
-		throw Unbalanced_parentheses{};
+	auto p = backward_find(s, e, {
+		Token_type::multiply, Token_type::divide, Token_type::mod });
+	if (p == e) {
+		return unary(s, e);
 	}
+	else if (p->type == Token_type::multiply) {
+		return term(s, p) * unary(p + 1, e);
+	} else {
+		auto r = unary(p + 1, e);
+		if (r == 0) {
+			throw Unsupported_operand{};
+		}
 
-	return unary(s, e);
+		if (p->type == Token_type::divide) {
+			return term(s, p) / r;
+		} else {
+			return fmod(term(s, p), r);
+		}
+	}
 }
 
 
 double Calculator::unary(const Token_iter& s, const Token_iter& e) {
-	switch (s->type) {
-	case Token_type::plus:
-		return +power(s + 1, e);
-	case Token_type::minus:
-		return -power(s + 1, e);
-	default:
-		return power(s, e);
+	int multiplier = 1;
+
+	Token_iter i;
+	for (i = s; i->type == Token_type::plus; ++i) {
 	}
+
+	for (; i->type == Token_type::minus; ++i) {
+		multiplier *= -1;
+	}
+
+	return multiplier * power(i, e);
 }
 
 
 double Calculator::power(const Token_iter& s, const Token_iter& e) {
-	// look for a "^" from the end that doesn't occur inside
-	// parentheses
-	ull nesting = 0;	// inside a "(" ... ")"? How deep?
-	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
-	for (auto i = e; i != s; ) {
-		--i;	// as i starts out pointing past the end
-				// see why i should be here in Calculator::expression
+	using std::pow;
 
-		switch (i->type) {
-		case Token_type::p_close:
-			++nesting;
-			break;
-		case Token_type::p_open:
-			--nesting;
-			break;
-		case Token_type::arg_delim_close:
-			++fnesting;
-			break;
-		case Token_type::arg_delim_open:
-			--fnesting;
-			break;
-		case Token_type::power:
-			if (!nesting) {
-				return pow(power(s, i), primary(i + 1, e));
-			}
-			break;
-		}
-	}	// search for <power> "^" <primary> fails
-
-	if (nesting || fnesting) {
-		throw Unbalanced_parentheses{};
+	auto p = backward_find(s, e, { Token_type::power });
+	if (p == e) {
+		return primary(s, e);
+	} else {
+		return pow(power(s, p), primary(p + 1, e));
 	}
-
-	return primary(s, e);
 }
 
 
-double Calculator::primary(const Token_iter& s, const Token_iter& e) {
+double Calculator::primary(const Token_iter& s,
+		const Token_iter& e) {
+
+	if (e == s) {	// this is caused when a lone `!` is given as
+					// input
+		throw Syntax_error{};
+	}
+
 	if ((e - 1)->type == Token_type::factorial) {
 		double n = primary(s, e - 1);
 		return factorial(n);
@@ -240,13 +176,17 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 	switch (s->type) {
 	case Token_type::number:
 		return s->value;
-	case Token_type::variable:
+	case Token_type::variable:	// could be a variable or function
+
+		// function: name (1) [ (2) args (3) ] (4)
 		if (s != (e - 1) && (s + 1)->type == Token_type::arg_delim_open) {
 			if ((e - 1)->type != Token_type::arg_delim_close) {
 				throw Unbalanced_parentheses{};
 			}
 			return invoke_fn(s->name, arguments(s + 1, e));
 		}
+
+		// variable
 		return evaluate_var(s->name);
 	case Token_type::previous:
 		return prev;
@@ -263,45 +203,23 @@ double Calculator::primary(const Token_iter& s, const Token_iter& e) {
 
 vector<double> Calculator::arguments(const Token_iter& s,
 		const Token_iter& e) {
-	// look for a "," from the end that doesn't occur inside
-	// parentheses
-	ull nesting = 0;	// inside a "(" ... ")"? How deep?
-	ull fnesting = 0;	// inside a "[" ... "]"? How deep?
 
-	for (auto i = e; i != s; ) {
-		--i;	// as i starts out pointing past the end
-				// see why i should be here in Calculator::expression
+	auto p = backward_find(s, e, { Token_type::arg_separator });
+	if (p == e) {
+		return { expression(s + 1, e - 1) };
+	} else {
+		auto args = arguments(s, p);
+		auto exp = expression(p + 1, e);
+		args.push_back(exp);
 
-		switch (i->type) {
-		case Token_type::p_close:
-			++nesting;
-			break;
-		case Token_type::p_open:
-			--nesting;
-			break;
-		case Token_type::arg_delim_close:
-			++fnesting;
-			break;
-		case Token_type::arg_delim_open:
-			--fnesting;
-			break;
-		case Token_type::arg_separator: {
-			vector<double> args = arguments(s, i);
-			args.push_back(expression(i + 1, e));
-			return args;
-		}
-		}
-	}	// search for <arguments> "," <expression> fails
-
-	if (nesting || fnesting) {
-		throw Unbalanced_parentheses{};
+		return args;
 	}
-	
-	double arg = expression(s + 1, e - 1);
-	return { arg };
 }
 
 
+/**
+ * Define a new variable.
+ */
 void Calculator::define_var(const string& name, double val) {
 	if (variables.find(name) != variables.end()) {
 		throw Redeclaration_of_variable{};
@@ -311,6 +229,9 @@ void Calculator::define_var(const string& name, double val) {
 }
 
 
+/**
+ * Return the value of a previously defined variable.
+ */
 double Calculator::evaluate_var(const string& name) {
 	if (variables.find(name) == variables.end()) {
 		throw Variable_not_defined{};
@@ -320,6 +241,9 @@ double Calculator::evaluate_var(const string& name) {
 }
 
 
+/**
+ * Return the result of invoking a predefined function.
+ */
 double Calculator::invoke_fn(const std::string& name,
 		const std::vector<double>& args) {
 	if (funcs.find(name) == funcs.end()) {
@@ -335,7 +259,9 @@ double Calculator::invoke_fn(const std::string& name,
  */
 bool is_operator(Token_type t) {
 	return t == Token_type::plus || t == Token_type::minus ||
-		t == Token_type::multiply || t == Token_type::divide;
+		t == Token_type::multiply || t == Token_type::divide ||
+		t == Token_type::assignment || t == Token_type::mod ||
+		t == Token_type::power;
 }
 
 
@@ -347,6 +273,60 @@ bool is_unary(const Token_iter& curr, const Token_iter& start) {
 }
 
 
+/**
+ * Float factorial.
+ */
 double factorial(double n) {
+	using std::tgamma;
+
 	return tgamma(n + 1);
+}
+
+
+/**
+ * Return the position of the last occurrence of any one of the given
+ * Token_types where it doesn't occur inside a nesting. On failure,
+ * return the end of the given range.
+ * 
+ * Also make sure, in case we're finding +/-, they must not be unary.
+ */
+Token_iter backward_find(const Token_iter& s, const Token_iter& e,
+		const vector<Token_type>& tf) {
+
+	using std::find;
+
+	ull nesting = 0;	// are we inside (...)
+	ull fnesting = 0;	// are we inside [...]
+
+	for (auto i = e; i != s; ) {
+		--i;	// don't put this anywhere in the for-loop
+				// or it'll seek before s, resulting in an exception
+
+		switch (i->type) {
+		case Token_type::p_close:
+			++nesting;
+			break;
+		case Token_type::p_open:
+			--nesting;
+			break;
+		case Token_type::arg_delim_close:
+			++fnesting;
+			break;
+		case Token_type::arg_delim_open:
+			--fnesting;
+			break;
+		case Token_type::plus: case Token_type::minus:
+			if (is_unary(i, s)) {
+				continue;
+			}
+			break;
+		}
+
+		if (find(tf.begin(), tf.end(), i->type) != tf.end() && 
+				!(nesting || fnesting)) {
+			return i;
+		}
+	}
+
+	return e;
 }
