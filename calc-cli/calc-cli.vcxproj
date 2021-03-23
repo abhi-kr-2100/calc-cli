@@ -22,11 +22,13 @@
     <ClCompile Include="src\calc-cli.cpp" />
     <ClCompile Include="src\calculator\calculator.cpp" />
     <ClCompile Include="src\calculator\token\token.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\calculator\calculator.hpp" />
     <ClInclude Include="src\calculator\exceptions\exceptions.hpp" />
     <ClInclude Include="src\calculator\token\token.hpp" />
+    <ClInclude Include="src\utils.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * calc-cli is a command-line calculator.
  * 
  * It supports the basic four functions, float modulus and float
@@ -9,18 +9,11 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-#include <cmath>
-#include <map>
-#include <functional>
-#include <vector>
-
-#ifdef _WIN32
-#include <Windows.h>
-#endif
 
 #include "calculator/calculator.hpp"
 #include "calculator/token/token.hpp"
 #include "calculator/exceptions/exceptions.hpp"
+#include "utils.hpp"
 
 
 using std::cout;
@@ -29,14 +22,9 @@ using std::cerr;
 using std::getline;
 using std::string;
 using std::exit;
-using std::map;
-using std::function;
-using std::vector;
 
 
 double evaluate(const string& expression, Calculator& calc);
-void clrscr();
-void display_help();
 void calculate(const string& input, Calculator& calc);
 void run(Calculator& calc);
 
@@ -49,42 +37,9 @@ constexpr auto clear = "clear";
 constexpr auto help = "help";
 
 
-constexpr double pi = 3.14159;
-constexpr double e = 2.71828;
-constexpr double phi = 1.61803;
-
-
-double sin_func(const vector<double> args);
-double cos_func(const vector<double> args);
-double tan_func(const vector<double> args);
-double sec_func(const vector<double> args);
-double csc_func(const vector<double> args);
-double cot_func(const vector<double> args);
-
-
-const Calc_func c_sin = sin_func;
-const Calc_func c_cos = cos_func;
-const Calc_func c_tan = tan_func;
-const Calc_func c_sec = sec_func;
-const Calc_func c_csc = csc_func;
-const Calc_func c_cot = cot_func;
-
-
 int main() {
-	const map<string, double> consts{
-		{"pi", pi},
-		{"e", e},
-		{"phi", phi}
-	};
-
-	const map<string, Calc_func> funcs{
-		{"sin", c_sin},
-		{"cos", c_cos},
-		{"tan", c_tan},
-		{"sec", c_sec},
-		{"csc", c_csc},
-		{"cot", c_cot}
-	};
+	auto consts = get_consts();
+	auto funcs = get_funcs();
 
 	Calculator calc{ consts, funcs };
 
@@ -100,27 +55,6 @@ int main() {
 double evaluate(const string& s, Calculator& calc) {
 	auto tokens = tokenize(s);
 	return calc.statement(tokens.begin(), tokens.end());
-}
-
-
-/**
- * Clear the screen by outputing a special terminal sequence.
- * 
- * Taken from: https://stackoverflow.com/questions/5866529/how-do-we-clear-the-console-in-assembly/5866648#5866648
- */
-void clrscr() {
-#ifdef _WIN32
-	COORD tl = { 0,0 };
-	CONSOLE_SCREEN_BUFFER_INFO s;
-	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-	GetConsoleScreenBufferInfo(console, &s);
-	DWORD written, cells = s.dwSize.X * s.dwSize.Y;
-	FillConsoleOutputCharacter(console, ' ', cells, tl, &written);
-	FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
-	SetConsoleCursorPosition(console, tl);
-#else
-	cout << "clear command is not supported.\n";
-#endif
 }
 
 
@@ -172,58 +106,4 @@ void run(Calculator& calc) {
 	}
 
 	calculate(input, calc);
-}
-
-
-void display_help() {
-	cout << "For help, see: https://github.com/abhi-kr-2100/calc-cli/blob/master/README.md" << '\n';
-}
-
-
-double sin_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::sin(args[0]);
-}
-
-double cos_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::cos(args[0]);
-}
-
-double tan_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return std::tan(args[0]);
-}
-
-double sec_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::cos(args[0]);
-}
-
-double csc_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::sin(args[0]);
-}
-
-double cot_func(const vector<double> args) {
-	if (args.size() != 1) {
-		throw Unsupported_operand{};
-	}
-
-	return 1 / std::tan(args[0]);
 }
