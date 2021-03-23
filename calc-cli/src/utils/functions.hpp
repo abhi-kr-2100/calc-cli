@@ -55,6 +55,9 @@ double cbrt_func(const std::vector<double> args);
 double abs_func(const std::vector<double> args);
 double round_func(const std::vector<double> args);
 
+double sum_func(const std::vector<double> args);
+double average_func(const std::vector<double> args);
+
 
 /**
  * Return a map<name, function> of useful mathematical functions.
@@ -97,7 +100,10 @@ std::map<std::string, Calc_func> get_funcs() {
 		{ "cbrt", cbrt_func },
 
 		{ "abs", abs_func },
-		{ "round", round_func }
+		{ "round", round_func },
+
+		{ "sum", sum_func },
+		{ "average", average_func }
 	};
 
 	return funcs;
@@ -264,5 +270,24 @@ double round_func(const std::vector<double> args) {
 	check_args(args, 1);
 	return std::round(args[0]);
 }
+
+
+double sum_func(const std::vector<double> args) {
+	double s = 0;
+	for (auto i : args) {
+		s += i;
+	}
+
+	return s;
+}
+
+double average_func(const std::vector<double> args) {
+	if (!args.size()) {
+		throw Unsupported_operand{};
+	}
+
+	return sum_func(args) / args.size();
+}
+
 
 #endif // !CALC_CLI_FUNCTIONS_HPP
