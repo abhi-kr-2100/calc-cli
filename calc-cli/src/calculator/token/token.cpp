@@ -28,12 +28,17 @@ double read_number(istringstream& source, char start);
 string read_name(istringstream& source);
 
 
+// how a variable definition starts
+constexpr auto var_decl_start = "let";
+
+
 /**
  * Tokenize the given string into mathematical symbols and
  * floating-point literal.
  */
 vector<Token> tokenize(const string& s) {
 	vector<Token> toks;
+
 	ull nesting = 0;	// are we inside a "(" .. ")", how deep?
 	ull fnesting = 0;	// are we inside a "[" .. "]", how deep?
 
@@ -96,13 +101,16 @@ vector<Token> tokenize(const string& s) {
 			toks.push_back(Token{ Token_type::assignment });
 			break;
 		default:
-			if (isalpha(token)) {	// variable or "let"-variable definition
+			if (isalpha(token)) {
+				// variable or "let"-variable definition
+				
 				sin.putback(token);
 				string name = read_name(sin);
 				if (name == "let") {
 					toks.push_back(Token{ Token_type::let });
 				} else {
-					toks.push_back(Token{ Token_type::variable, 0, name});
+					toks.push_back(
+						Token{ Token_type::variable, 0, name});
 				}
 			} else {
 				throw Unknown_token{};
@@ -118,6 +126,10 @@ vector<Token> tokenize(const string& s) {
 }
 
 
+/**
+ * Read and return a floating-point number from the given input
+ * source.
+ */
 double read_number(istringstream& in, char) {
 	double n;
 	in >> n;
@@ -130,6 +142,13 @@ double read_number(istringstream& in, char) {
 }
 
 
+/**
+ * Read and return a variable name.
+ * 
+ * A variable name consists of alphabetical characters and no spaces.
+ * Unlike a variable name in C++, it can't contain underscore or
+ * digits.
+ */
 string read_name(istringstream& in) {
 	string name;
 

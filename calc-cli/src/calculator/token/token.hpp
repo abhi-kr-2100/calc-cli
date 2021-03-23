@@ -20,8 +20,8 @@ enum class Token_type {
 	number,
 	p_open, p_close,	// parentheses
 	factorial,
-	previous,			// token which prints the value of the previous
-						// calculation
+	previous,			// token which prints the value of the
+						// previous calculation
 	let,				// used to start a variable definition
 	variable,
 	assignment,
@@ -34,7 +34,8 @@ enum class Token_type {
 struct Token {
 	Token_type type;
 	double value;		// used only when type is Token_type::number
-	std::string name;	// used only when type is Token_type::variable
+	std::string name;	// used only when type is
+						// Token_type::variable
 };
 
 
