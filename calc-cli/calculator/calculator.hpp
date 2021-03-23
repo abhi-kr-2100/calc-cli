@@ -28,7 +28,7 @@
 #include <map>
 #include <string>
 
-#include "token.hpp"
+#include "token/token.hpp"
 
 
 using Token_iter = std::vector<Token>::const_iterator;

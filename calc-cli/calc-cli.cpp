@@ -16,9 +16,9 @@
 #include <Windows.h>
 #endif
 
-#include "calculator.hpp"
-#include "token.hpp"
-#include "exceptions.hpp"
+#include "calculator/calculator.hpp"
+#include "calculator/token/token.hpp"
+#include "calculator/exceptions/exceptions.hpp"
 
 
 using std::cout;

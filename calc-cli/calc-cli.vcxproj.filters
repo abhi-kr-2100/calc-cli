@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="token.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="calculator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="calc-cli.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="calculator\calculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="calculator\token\token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="calculator.hpp">
+    <ClInclude Include="calculator\calculator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exceptions.hpp">
+    <ClInclude Include="calculator\token\token.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="token.hpp">
+    <ClInclude Include="calculator\exceptions\exceptions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

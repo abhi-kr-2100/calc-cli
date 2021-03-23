@@ -22,8 +22,8 @@
 #include <string>
 
 #include "calculator.hpp"
-#include "token.hpp"
-#include "exceptions.hpp"
+#include "token/token.hpp"
+#include "exceptions/exceptions.hpp"
 
 
 using std::string;

@@ -11,7 +11,7 @@
 #include <cctype>
 
 #include "token.hpp"
-#include "exceptions.hpp"
+#include "../exceptions/exceptions.hpp"
 
 
 using namespace std::literals::string_literals;
