@@ -113,13 +113,13 @@ vector<Token> tokenize(const string& s) {
 						Token{ Token_type::variable, 0, name});
 				}
 			} else {
-				throw Unknown_token{};
+				throw Unknown_token{ "unknown token" };
 			}
 		}
 	}
 
 	if (nesting || fnesting) {
-		throw Unbalanced_parentheses{};
+		throw Unbalanced_parentheses{ "unbalanced () or []" };
 	}
 
 	return toks;
@@ -135,7 +135,7 @@ double read_number(istringstream& in, char) {
 	in >> n;
 
 	if (in.bad()) {
-		throw Bad_literal{};
+		throw Bad_literal{ "not a valid number" };
 	}
 
 	return n;

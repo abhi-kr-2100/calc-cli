@@ -69,13 +69,15 @@ double Calculator::declaration(const Token_iter& s,
 	// let (1) var (2) = (3) exp (4)
 	// a valid declaration must have all four parts
 	if (!(s + 1 == e || s + 2 == e || s + 3 == e)) {
-		throw Syntax_error{};
+		throw Syntax_error{
+			"declaration must be of the form: let var = val" };
 	}
 
 	if (s->type != Token_type::let ||
 			(s + 1)->type != Token_type::variable ||
 			(s + 2)->type != Token_type::assignment) {
-		throw Syntax_error{};
+		throw Syntax_error{
+			"declaration must be of the form: let var = val" };
 	}
 
 	// at what position do (2) and (4) start
@@ -121,7 +123,7 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 	} else {
 		auto r = unary(p + 1, e);
 		if (r == 0) {
-			throw Unsupported_operand{};
+			throw Unsupported_operand{ "Can't divide or mod by 0." };
 		}
 
 		if (p->type == Token_type::divide) {
@@ -164,8 +166,9 @@ double Calculator::primary(const Token_iter& s,
 		const Token_iter& e) {
 
 	if (e == s) {	// this is caused when a lone `!` is given as
-					// input
-		throw Syntax_error{};
+					// input; maybe caused due to other reasons as
+					// well
+		throw Syntax_error{ "bad syntax" };
 	}
 
 	if ((e - 1)->type == Token_type::factorial) {
@@ -181,7 +184,7 @@ double Calculator::primary(const Token_iter& s,
 		// function: name (1) [ (2) args (3) ] (4)
 		if (s != (e - 1) && (s + 1)->type == Token_type::arg_delim_open) {
 			if ((e - 1)->type != Token_type::arg_delim_close) {
-				throw Unbalanced_parentheses{};
+				throw Unbalanced_parentheses{ "] was not found" };
 			}
 			return invoke_fn(s->name, arguments(s + 1, e));
 		}
@@ -192,11 +195,11 @@ double Calculator::primary(const Token_iter& s,
 		return prev;
 	case Token_type::p_open:
 		if ((e - 1)->type != Token_type::p_close) {
-			throw Unbalanced_parentheses{};
+			throw Unbalanced_parentheses{ ") was not found" };
 		}
 		return expression(s + 1, e - 1);
 	default:
-		throw Unknown_token{};
+		throw Unknown_token{ "unknown token" };
 	}
 }
 
@@ -226,7 +229,8 @@ vector<double> Calculator::arguments(const Token_iter& s,
  */
 void Calculator::define_var(const string& name, double val) {
 	if (variables.find(name) != variables.end()) {
-		throw Redeclaration_of_variable{};
+		throw Redeclaration_of_variable{ 
+			"can't redeclare variable " };
 	}
 
 	variables[name] = val;
@@ -238,7 +242,7 @@ void Calculator::define_var(const string& name, double val) {
  */
 double Calculator::evaluate_var(const string& name) {
 	if (variables.find(name) == variables.end()) {
-		throw Variable_not_defined{};
+		throw Variable_not_defined{ "no such variable" };
 	}
 
 	return variables[name];
@@ -251,7 +255,7 @@ double Calculator::evaluate_var(const string& name) {
 double Calculator::invoke_fn(const std::string& name,
 		const std::vector<double>& args) {
 	if (funcs.find(name) == funcs.end()) {
-		throw Variable_not_defined{};
+		throw Variable_not_defined{ "no such function" };
 	}
 
 	return funcs[name](args);
