@@ -68,27 +68,8 @@ double evaluate(const std::string& s, Calculator& calc) {
 void calculate(const std::string& input, Calculator& calc) {
 	try {
 		std::cout << answer << evaluate(input, calc);
-	}
-	catch (Unbalanced_parentheses&) {
-		std::cerr << error << "unbalanced parentheses.";
-	}
-	catch (Unknown_token&) {
-		std::cerr << error << "unknown token.";
-	}
-	catch (Bad_literal&) {
-		std::cerr << error << "not a valid number.";
-	}
-	catch (Unsupported_operand&) {
-		std::cerr << error << "operation not supported by operand.";
-	}
-	catch (Syntax_error&) {
-		std::cerr << error << "syntax error.";
-	}
-	catch (Redeclaration_of_variable&) {
-		std::cerr << error << "variable already exists.";
-	}
-	catch (Variable_not_defined&) {
-		std::cerr << error << "no such variable.";
+	} catch (Calc_cli_exception& e) {
+		std::cerr << error << e.what();
 	}
 
 	std::cout << "\n";
