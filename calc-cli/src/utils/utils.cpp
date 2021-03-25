@@ -86,6 +86,10 @@ void run(Calculator& calc) {
 	std::string input;
 	std::getline(std::cin, input);
 
+	if (!std::cin) {
+		std::exit(0);
+	}
+
 	if (input.size() == 0) {
 		return;
 	}
