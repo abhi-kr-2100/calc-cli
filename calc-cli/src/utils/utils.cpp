@@ -16,6 +16,7 @@
 #endif
 
 #include "utils.hpp"
+#include "consts.hpp"
 #include "calc_consts.hpp"
 #include "calc_funcs.hpp"
 #include "../calculator/exceptions/exceptions.hpp"
@@ -48,7 +49,7 @@ void clrscr() {
  * output.
  */
 void display_help() {
-	std::cout << "For help, see: https://github.com/abhi-kr-2100/calc-cli/blob/master/README.md" << '\n';
+	std::cout << "For help, see: " << README_URL << '\n';
 }
 
 
