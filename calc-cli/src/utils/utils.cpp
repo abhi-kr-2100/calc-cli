@@ -20,7 +20,6 @@
 #include "calc_consts.hpp"
 #include "calc_funcs.hpp"
 #include "../calculator/exceptions/exceptions.hpp"
-#include "../calculator/token/token.hpp"
 
 
 /**
@@ -54,21 +53,12 @@ void display_help() {
 
 
 /**
- * Return the value of a math expression.
- */
-double evaluate(const std::string& s, Calculator& calc) {
-	auto tokens = tokenize(s);
-	return calc.statement(tokens.begin(), tokens.end());
-}
-
-
-/**
  * Helper function to display the value of an expression, and handle
  * resulting exceptions.
  */
 void calculate(const std::string& input, Calculator& calc) {
 	try {
-		std::cout << answer << evaluate(input, calc);
+		std::cout << answer << calc.evaluate(input);
 	} catch (Calc_cli_exception& e) {
 		std::cerr << error << e.what();
 	}

@@ -33,10 +33,14 @@ public:
 				:variables{ consts }, funcs{ functions } {
 	}
 
-	// users of calculator should only have to call statement
-	double statement(const Token_iter& start, const Token_iter& end);
+	double evaluate(std::string input) {
+		auto tokens = tokenize(input);
+		return statement(tokens.begin(), tokens.end());
+	}
 
 private:
+	double statement(const Token_iter& start, const Token_iter& end);
+
 	double declaration(const Token_iter& start,
 		const Token_iter& end);
 
