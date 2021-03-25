@@ -16,8 +16,8 @@
 #endif
 
 #include "utils.hpp"
-#include "constants.hpp"
-#include "functions.hpp"
+#include "calc_consts.hpp"
+#include "calc_funcs.hpp"
 #include "../calculator/exceptions/exceptions.hpp"
 #include "../calculator/token/token.hpp"
 
