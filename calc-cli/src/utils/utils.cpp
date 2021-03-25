@@ -39,7 +39,7 @@ void clrscr() {
 	FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
 	SetConsoleCursorPosition(console, tl);
 #else
-	cout << "clear command is not supported.\n";
+	std::cout << "\033[2J\033[1; 1H";
 #endif
 }
 
