@@ -134,7 +134,7 @@ double read_number(istringstream& in, char) {
 	double n;
 	in >> n;
 
-	if (in.bad()) {
+	if (!in) {
 		throw Bad_literal{ "not a valid number" };
 	}
 
