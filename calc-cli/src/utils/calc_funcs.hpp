@@ -45,6 +45,8 @@ double acsch_func(const std::vector<double> args);
 double asech_func(const std::vector<double> args);
 double acoth_func(const std::vector<double> args);
 
+double d_func(const std::vector<double> args);
+
 double ln_func(const std::vector<double> args);
 double log_func(const std::vector<double> args);
 double log2_func(const std::vector<double> args);
@@ -57,6 +59,10 @@ double round_func(const std::vector<double> args);
 
 double sum_func(const std::vector<double> args);
 double average_func(const std::vector<double> args);
+
+double factorial_func(const std::vector<double> args);
+double permutation_func(const std::vector<double> args);
+double combination_func(const std::vector<double> args);
 
 
 /**
@@ -234,6 +240,12 @@ double acoth_func(const std::vector<double> args) {
 }
 
 
+double d_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return args[0] * 57.2958;
+}
+
+
 double ln_func(const std::vector<double> args) {
 	check_args(args, 1);
 	return std::log(args[0]);
@@ -289,5 +301,22 @@ double average_func(const std::vector<double> args) {
 	return sum_func(args) / args.size();
 }
 
+
+double factorial_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return std::tgamma(args[0] + 1);
+}
+
+
+double permutation_func(const std::vector<double> args) {
+	check_args(args, 2);
+	return std::tgamma(args[0] + 1) / 
+		std::tgamma(args[0] - args[1] + 1);
+}
+
+double combination_func(const std::vector<double> args) {
+	auto p = permutation_func(args);
+	return p / std::tgamma(args[1] + 1);
+}
 
 #endif // !CALC_CLI_FUNCTIONS_HPP
