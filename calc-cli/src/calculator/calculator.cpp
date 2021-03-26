@@ -206,7 +206,7 @@ double Calculator::primary(const Token_iter& s,
 		}
 		return expression(s + 1, e - 1);
 	default:
-		throw Unknown_token{ "unknown token" };
+		throw Syntax_error{ "the given token doesn't belong here" };
 	}
 }
 
@@ -229,7 +229,7 @@ double Calculator::number(const Token_iter& s, const Token_iter& e) {
 
 		return call(s, e);
 	default:
-		throw Unknown_token{ "unknown token" };
+		throw Syntax_error{ "the given token doesn't belong here" };
 	}
 }
 
