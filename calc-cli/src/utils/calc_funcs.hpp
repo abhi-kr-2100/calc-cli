@@ -12,7 +12,7 @@
 
 void check_args(const std::vector<double> args, std::size_t n) {
 	if (args.size() != n) {
-		throw Unsupported_operand{};
+		throw Unsupported_operand{ "invalid number of arguments" };
 	}
 }
 
