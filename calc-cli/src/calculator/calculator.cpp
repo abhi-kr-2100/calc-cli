@@ -177,6 +177,9 @@ double Calculator::primary(const Token_iter& s,
 
 	switch (s->type) {
 	case Token_type::number:
+		if (s != (e - 1)) {
+			throw Syntax_error{ "no operator between operands" };
+		}
 		return s->value;
 	case Token_type::variable:	// could be a variable or function
 
