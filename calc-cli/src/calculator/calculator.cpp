@@ -177,26 +177,29 @@ double Calculator::primary(const Token_iter& s,
 
 	switch (s->type) {
 	case Token_type::number:
-		if (s != (e - 1)) {
-			throw Syntax_error{ "no operator between operands" };
-		}
-		return s->value;
-	case Token_type::variable:	// could be a variable or function
-
-		// function: name (1) [ (2) args (3) ] (4)
-		if (s != (e - 1) && 
-				(s + 1)->type == Token_type::arg_delim_open) {
-			
-			if ((e - 1)->type != Token_type::arg_delim_close) {
-				throw Unbalanced_parentheses{ "] was not found" };
-			}
-			return invoke_fn(s->name, arguments(s + 1, e));
-		}
-
-		// variable
-		return evaluate_var(s->name);
+	case Token_type::variable:
 	case Token_type::previous:
-		return prev;
+		return number(s, e);
+	//	if (s != (e - 1)) {
+	//		throw Syntax_error{ "no operator between operands" };
+	//	}
+	//	return s->value;
+	//case Token_type::variable:	// could be a variable or function
+
+	//	// function: name (1) [ (2) args (3) ] (4)
+	//	if (s != (e - 1) && 
+	//			(s + 1)->type == Token_type::arg_delim_open) {
+	//		
+	//		if ((e - 1)->type != Token_type::arg_delim_close) {
+	//			throw Unbalanced_parentheses{ "] was not found" };
+	//		}
+	//		return invoke_fn(s->name, arguments(s + 1, e));
+	//	}
+
+	//	// variable
+	//	return evaluate_var(s->name);
+	//case Token_type::previous:
+	//	return prev;
 	case Token_type::p_open:
 		if ((e - 1)->type != Token_type::p_close) {
 			throw Unbalanced_parentheses{ ") was not found" };
@@ -208,16 +211,53 @@ double Calculator::primary(const Token_iter& s,
 }
 
 
+double Calculator::number(const Token_iter& s, const Token_iter& e) {
+	switch (s->type) {
+	case Token_type::number:
+	case Token_type::previous: {
+		if (s != (e - 1)) {	// e.g.: "1 1"
+			throw Syntax_error{ "no operator between operands" };
+		}
+
+		auto v = (s->type == Token_type::number) ? s->value : prev;
+		return v;
+	}
+	case Token_type::variable:
+		if (s == (e - 1)) {
+			return evaluate_var(s->name);
+		}
+
+		return call(s, e);
+	default:
+		throw Unknown_token{ "unknown token" };
+	}
+}
+
+
+double Calculator::call(const Token_iter& s, const Token_iter& e) {
+	// check if this is a proper function call
+	if (s->type != Token_type::variable ||
+			(s + 1)->type != Token_type::arg_delim_open ||
+			(e - 1)->type != Token_type::arg_delim_close) {
+
+		throw Syntax_error{ "improper function call" };
+	}
+
+	return invoke_fn(s->name, arguments(s + 2, e - 1));
+}
+
+
 vector<double> Calculator::arguments(const Token_iter& s,
 		const Token_iter& e) {
 
-	// don't pass the enclosing [/]s
-	auto p = backward_find(s + 1, e - 1, { Token_type::arg_separator });
+	if (s == e) {	// empty argument list
+		return {};
+	}
 
-	if (p == (e - 1)) {
-		// ] gets passed to expression as it's the end term
-		// end terms are assumed to contain non-useful information
-		return { expression(s + 1, e) };
+	auto p = backward_find(s, e, { Token_type::arg_separator });
+
+	if (p == e) {	// single argument
+		return { expression(s, e) };
 	} else {
 		auto args = arguments(s, p);
 		auto exp = expression(p + 1, e);

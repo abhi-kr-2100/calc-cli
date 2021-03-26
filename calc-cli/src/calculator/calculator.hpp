@@ -54,6 +54,10 @@ private:
 	double power(const Token_iter& start, const Token_iter& end);
 	
 	double primary(const Token_iter& start, const Token_iter& end);
+
+	double number(const Token_iter& start, const Token_iter& end);
+
+	double call(const Token_iter& start, const Token_iter& end);
 	
 	std::vector<double> arguments(const Token_iter& start,
 		const Token_iter& end);
