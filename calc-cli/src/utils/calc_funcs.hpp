@@ -10,10 +10,19 @@
 #include "../calculator/exceptions/exceptions.hpp"
 
 
-void check_args(const std::vector<double> args, std::size_t n) {
+bool check_args(const std::vector<double> args, std::size_t n,
+		bool should_throw = true) {
+
 	if (args.size() != n) {
-		throw Unsupported_operand{ "invalid number of arguments" };
+		if (should_throw) {
+			throw Unsupported_operand{
+				"invalid number of arguments" };
+		}
+
+		return false;
 	}
+
+	return true;
 }
 
 
