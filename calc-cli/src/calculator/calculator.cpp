@@ -184,7 +184,9 @@ double Calculator::primary(const Token_iter& s,
 	case Token_type::variable:	// could be a variable or function
 
 		// function: name (1) [ (2) args (3) ] (4)
-		if (s != (e - 1) && (s + 1)->type == Token_type::arg_delim_open) {
+		if (s != (e - 1) && 
+				(s + 1)->type == Token_type::arg_delim_open) {
+			
 			if ((e - 1)->type != Token_type::arg_delim_close) {
 				throw Unbalanced_parentheses{ "] was not found" };
 			}
