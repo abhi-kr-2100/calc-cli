@@ -117,8 +117,7 @@ double Calculator::term(const Token_iter& s, const Token_iter& e) {
 		Token_type::multiply, Token_type::divide, Token_type::mod });
 	if (p == e) {
 		return unary(s, e);
-	}
-	else if (p->type == Token_type::multiply) {
+	} else if (p->type == Token_type::multiply) {
 		return term(s, p) * unary(p + 1, e);
 	} else {
 		auto r = unary(p + 1, e);
