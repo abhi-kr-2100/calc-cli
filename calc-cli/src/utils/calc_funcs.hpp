@@ -303,8 +303,9 @@ double sum_func(const std::vector<double> args) {
 }
 
 double average_func(const std::vector<double> args) {
-	if (!args.size()) {
-		throw Unsupported_operand{};
+	if (check_args(args, 0, false)) {
+		throw Unsupported_operand{
+			"can't take average of zero numbers" };
 	}
 
 	return sum_func(args) / args.size();
