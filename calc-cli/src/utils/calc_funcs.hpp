@@ -55,6 +55,7 @@ double asech_func(const std::vector<double> args);
 double acoth_func(const std::vector<double> args);
 
 double d_func(const std::vector<double> args);
+double r_func(const std::vector<double> args);
 
 double ln_func(const std::vector<double> args);
 double log_func(const std::vector<double> args);
@@ -107,6 +108,9 @@ std::map<std::string, Calc_func> get_funcs() {
 		{ "asech", asech_func },
 		{ "acoth", acoth_func },
 
+		{ "d", d_func },
+		{ "r", r_func },
+
 		{ "ln", ln_func },
 		{ "log", log_func },
 		{ "logb", log2_func },
@@ -118,7 +122,11 @@ std::map<std::string, Calc_func> get_funcs() {
 		{ "round", round_func },
 
 		{ "sum", sum_func },
-		{ "average", average_func }
+		{ "average", average_func },
+
+		{ "factorial", factorial_func },
+		{ "combination", combination_func },
+		{ "permutation", permutation_func },
 	};
 
 	return funcs;
@@ -252,6 +260,12 @@ double acoth_func(const std::vector<double> args) {
 double d_func(const std::vector<double> args) {
 	check_args(args, 1);
 	return args[0] * 57.2958;
+}
+
+
+double r_func(const std::vector<double> args) {
+	check_args(args, 1);
+	return args[0] * 0.0174533;
 }
 
 
